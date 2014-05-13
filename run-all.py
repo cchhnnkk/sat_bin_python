@@ -15,7 +15,8 @@ def run_all(filename):
     print '\tsolve the sat'
     sat.control(bramfile)
 
-if __name__ == '__main__':
+
+def test_uf20_91_1000():
     # path = "E:\\sat\\workspace\\partitionCNF\\cnfdata\\"
     path = "E:\\sat\\reference\\benchmarks\\satlib-benchmark\\uf20-91\\"
     if len(sys.argv) == 2:
@@ -26,3 +27,6 @@ if __name__ == '__main__':
     for i in xrange(start, 1000, 1):
         filename = "uf20-0%d.cnf" % i
         run_all(path + filename)
+
+if __name__ == '__main__':
+    test_uf20_91_1000()

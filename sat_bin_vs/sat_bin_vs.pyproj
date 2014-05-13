@@ -25,6 +25,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="convert_csr_to_bram_data.py" />
+    <Compile Include="partitioncnf.py" />
     <Compile Include="pysat_cocu.py" />
     <Compile Include="sat_bin_lvlstate.py" />
     <Compile Include="sat_shedskin.py" />

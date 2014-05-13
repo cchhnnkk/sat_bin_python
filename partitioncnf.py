@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # use shareC_len shareV_len list to optimize the compute_clauses_gravity
 # the time to solve 'simon-s02b-r4b1k1.1.cnf' is 43.0280668964 s
@@ -171,7 +172,7 @@ def bin_packing(clauses, nc, c_rank, cmax, vmax):
         c = clauses[ci]
         vset = set(c)
         newset = vset | vbin[j]
-        if len(newset) <= vmax and len(cbin[j]) <= cmax:
+        if len(newset) < vmax and len(cbin[j]) < cmax:
             cbin[j] += [ci]
             vbin[j] |= vset
             # print ci, cbin[j]
@@ -213,6 +214,7 @@ def min_bandwidth(clauses, c_adjacent, v_adjacent, nc, nv, times, cmax, vmax):
 
     plt.subplot(1, 2, 1)
     plot_cnf(clauses, nc, c_rank, v_rank)
+    itag = 0
     for i in range(0, times):
         # Compute Gravity of all clauses
         c_gravity = np.array(nc * [0])
@@ -234,7 +236,10 @@ def min_bandwidth(clauses, c_adjacent, v_adjacent, nc, nv, times, cmax, vmax):
             v_rank_best = v_rank[:]
             cbin_best = cbin
             vbin_best = vbin
+            itag = i
 
+    if kk_debug:
+        print itag
     plt.subplot(1, 2, 2)
     plot_cnf(clauses, nc, c_rank, v_rank)
 
@@ -342,7 +347,7 @@ def main():
 
     resultfilename = arguments.o
     path = "E:\\sat\\reference\\benchmarks\\satlib-benchmark\\uf20-91\\"
-    filename = "uf20-0%d.cnf" % 206
+    filename = "uf20-0%d.cnf" % 232
     resultfilename = 'bram_' + filename
     filename = path + filename
     run(filename, resultfilename)
