@@ -32,9 +32,6 @@
     <Compile Include="sat_shedskin.py" />
     <Compile Include="test10.py" />
     <Compile Include="testsomething.py" />
-    <Content Include="bram_bins_unsat7.txt" />
-    <Content Include="learnt.txt" />
-    <Content Include="pysat_cocu_result.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>

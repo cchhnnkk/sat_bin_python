@@ -1,7 +1,20 @@
 # coding: utf-8
 
 # 中文注释
+import logging
 
+logging.basicConfig(filename='debug.info.todo',
+                    format='',
+                    filemode='w')
+logging.shutdown()
+logging.basicConfig(filename='')
+
+logging.basicConfig(level=logging.DEBUG)  # 定义日志级别为INFO级别
+logging.getLogger().setLevel(logging.DEBUG)
+
+str1 = 'ss'
+logging.debug(str1 + 'this is a message' + ' yi')
+logging.info('this is a message')
 print 'ok'
 exit()
 

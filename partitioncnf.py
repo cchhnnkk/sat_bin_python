@@ -293,9 +293,13 @@ def write_result(filename, resultfilename, cbin, vbin, nc, nv, cmax, vmax):
             fp_bin.write('\n')
         fp_bin.write('\n')
 
+cmax = 4
+vmax = 8
+
 
 def run(filename, resultfilename):
     times = 10
+    global cmax, vmax
     cmax = 4
     vmax = 8
     # filename = 'uf20-01.txt'

@@ -5,15 +5,24 @@
 # 没有implication graph
 
 import argparse
-import matplotlib.pyplot as plt
 import copy
+import logging
+import os
 
-# kk_debug
-# 0: queit
-# 1: a little output
-# 2: full output
-
-kk_debug = 0
+#全局变量便于调试
+bin_manager = None
+sat_engine = None
+# 定义日志级别为WARNING级别
+# CRITICAL    50
+# ERROR       40
+# WARNING     30
+# INFO        20
+# DEBUG       10
+# NOTSET      0
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
+# logger.setLevel(logging.INFO)
+# logger.setLevel(logging.DEBUG)
 
 
 class VarState(object):
@@ -202,87 +211,7 @@ class LocalVars(object):
             self.conflict_tag[i] = 0
 
 # 全局变量，在control中进行实例化
-print_debug_info = None
-
-
-class PrintDebugInfo(object):
-    """docstring for PrintDebugInfo"""
-    def __init__(self, bin_manager):
-        self.bin_manager = bin_manager
-
-    def one_clause(self, c, local_vars, strtab):
-        vs = local_vars.vs
-        cc = []
-        value = []
-        implied = []
-        level = []
-        bini = []
-        has_bkt = []
-        reason = []
-        ls = self.bin_manager.lvl_state
-        for i in xrange(len(c)):
-            var = i + 1
-            if c[i] != 0:
-                if c[i] == 1:
-                    var = -var
-                cc += [var]
-                value += [vs[i].value]
-                implied += [vs[i].implied]
-                level += [vs[i].level]
-                bini += [ls[vs[i].level].dcd_bin]
-                has_bkt += [ls[vs[i].level].has_bkt]
-                reason += [local_vars.reason[i]]
-        print '%slits   ' % strtab, cc
-        print '%svalue  ' % strtab, value
-        print '%simplied' % strtab, [int(l) for l in implied]
-        print '%slevel  ' % strtab, level
-        print '%sbin    ' % strtab, bini
-        print '%sbkted  ' % strtab, [int(l) for l in has_bkt]
-        print '%sreason ' % strtab, reason
-
-    def bin_clauses(self, clauses, variables, vs):
-        ci = 1
-        for c in clauses:
-            strc = '\tc%d  ' % ci
-            # print len(c), len(variables)
-            for i in xrange(len(variables)):
-                # var = variables[i]+1
-                var = i + 1
-                if c[i] == 1:
-                    strc += str(-var) + ' '
-                elif c[i] == 2:
-                    strc += str(var) + ' '
-            print strc
-            ci += 1
-        print '\tglobal vars', [l + 1 for l in variables]
-        print '\tlocal vars ', [l + 1 for l in range(len(variables))]
-        print '\tvalue      ', [l.value for l in vs]
-        print '\timplied    ', [int(l.implied) for l in vs]
-        print '\tlevel      ', [l.level for l in vs]
-
-
-def convert_csr_clause_list(c):
-    l = []
-    for i in xrange(len(c)):
-        if c[i] != 0:
-            var = i + 1
-            if c[i] == 1:
-                l += [-var]
-            elif c[i] == 2:
-                l += [var]
-    return l
-
-
-def convert_csr_clause_str(c, varl):
-    strc = ''
-    for i in xrange(len(varl)):
-        if varl[i] != 0:
-            var = varl[i] + 1
-            if c[i] == 1:
-                strc += str(-var) + ' '
-            elif c[i] == 2:
-                strc += str(var) + ' '
-    return strc
+gen_debug_info = None
 
 
 class SatEngine(object):
@@ -317,8 +246,7 @@ class SatEngine(object):
         self.learntc = [0] * vmax
 
     def preprocess(self, cur_bi):
-        if kk_debug == 2:
-            print '--\tpreprocess'
+        logger.debug('--\tpreprocess')
 
         while 1:
             conflict, ccindex = self.c_array.init_state(self.local_vars.vs)
@@ -328,13 +256,12 @@ class SatEngine(object):
                 # find conflict
                 bkt_bin, bkt_lvl = self.find_bkt_lvl(clauses[ccindex])
 
-                if kk_debug == 2:
-                    print '\t\tconflict c%d' % (ccindex + 1)
-                    global print_debug_info
-                    print_debug_info.one_clause(clauses[ccindex],
-                                                self.local_vars,
-                                                '\t\t')
-                    print '\t\tbkt_bin', bkt_bin, 'bkt_lvl', bkt_lvl
+                logger.debug('\t\tconflict c%d' % (ccindex + 1))
+                global gen_debug_info
+                logger.debug(gen_debug_info.one_clause(clauses[ccindex],
+                                                       self.local_vars,
+                                                       '\t\t'))
+                logger.debug('\t\tbkt_bin %d bkt_lvl %d' % (bkt_bin, bkt_lvl))
 
                 if cur_bi == bkt_bin:
                     # 当前bin中进行回退
@@ -363,8 +290,7 @@ class SatEngine(object):
                     self.learntc[i] = lit
 
     def decision(self, cur_bi):
-        if kk_debug == 2:
-            print '--\tdecision'
+        logger.debug('--\tdecision')
 
         # 如果所有的子句均已满足，则该bin为partial sat
         allsat = True
@@ -374,8 +300,7 @@ class SatEngine(object):
                 break
 
         if allsat is True:
-            if kk_debug == 2:
-                print '----\t\tpartial sat'
+            logger.debug('----\t\tpartial sat')
             return True
 
         # 遍历查找一个free var, 并且assign it false
@@ -395,10 +320,9 @@ class SatEngine(object):
                 if self.c_array.update_state(i, self.local_vars.vs) is False:
                     print 'this is impossible'
                     exit()
-                if kk_debug == 2:
-                    print '\t\tvar', i + 1, 'gvar',\
-                        self.local_vars.global_var[i] + 1, \
-                        'value 1', 'level', self.cur_lvl
+                str1 = '\t\tvar %d gvar %d value 1 level %d'\
+                    % (i + 1, self.local_vars.global_var[i] + 1, self.cur_lvl)
+                logger.debug(str1)
                 self.need_bcp = True
                 self.cur_lvl += 1
                 return False
@@ -410,8 +334,7 @@ class SatEngine(object):
 
     def bcp(self):
         """return conflict, conflict clause index, conflict var index"""
-        if kk_debug == 2:
-            print '--\tbcp'
+        logger.debug('--\tbcp')
         self.need_bcp = True
         while self.need_bcp:
             self.need_bcp = False
@@ -430,11 +353,11 @@ class SatEngine(object):
                 self.local_vars.reason[j] = i + 1
                 c_array.c_isreason[i] = True
 
-                if kk_debug == 2:
-                    print '\t\tc%d' % (i + 1), 'var', j + 1, \
-                        'gvar', self.local_vars.global_var[j] + 1,\
-                        'value', c[j], 'level', vs.level
-
+                str1 = '\t\tc%d ' % (i + 1)
+                str1 += 'var %d gvar %d '\
+                    % (j + 1, self.local_vars.global_var[j] + 1)
+                str1 += 'value %d level %d' % (c[j], self.cur_lvl)
+                logger.debug(str1)
                 conflict, ccindex = \
                     c_array.update_state(j, self.local_vars.vs)
 
@@ -477,14 +400,12 @@ class SatEngine(object):
         return bkt_bi, bkt_lvl
 
     def analysis(self, ccindex, cvindex):
-        if kk_debug == 2:
-            print '--\tanalysis the conflict'
-        if kk_debug == 2:
-            print '\t\tconflict c%d' % (ccindex + 1)
-            global print_debug_info
-            print_debug_info.one_clause(self.c_array.clauses[ccindex],
-                                        self.local_vars,
-                                        '\t\t')
+        logger.debug('--\tanalysis the conflict')
+        logger.debug('\t\tconflict c%d' % (ccindex + 1))
+        global gen_debug_info
+        logger.debug(gen_debug_info.one_clause(self.c_array.clauses[ccindex],
+                                               self.local_vars,
+                                               '\t\t'))
         self.local_vars.reset_conflict_tag()
 
         self.local_vars.conflict_tag[cvindex] = 3
@@ -502,9 +423,9 @@ class SatEngine(object):
 
         bkt_bi, bkt_lvl = self.find_bkt_lvl(self.learntc)
 
-        if kk_debug == 2:
-            print '--\tthe learntc ', convert_csr_clause_list(self.learntc)
-            print '\t\tbkt_bin', bkt_bi, 'bkt_lvl', bkt_lvl
+        logger.debug('--\tthe learntc %s'
+                     % gen_debug_info.convert_csr_clause(self.learntc))
+        logger.debug('\t\tbkt_bin %d bkt_lvl %d' % (bkt_bi, bkt_lvl))
 
         self.learntc = [0] * self.vmax    # reset next learnt clause
         self.cur_lvl = bkt_lvl + 1
@@ -512,8 +433,7 @@ class SatEngine(object):
 
     # bin内回退
     def backtrack_cur_bin(self, bkt_lvl):
-        if kk_debug == 2:
-            print '--\tbacktrack_cur_bin: bkt_lvl ==', bkt_lvl
+        logger.debug('--\tbacktrack_cur_bin: bkt_lvl == %d' % bkt_lvl)
         # backtrack the variables' states
         for i in xrange(self.local_vars.nv):
             vs = self.local_vars.vs[i]
@@ -544,8 +464,7 @@ class SatEngine(object):
         """ return next_bin, next_lvl, bkt_lvl """
         self.cur_lvl = next_lvl
         self.cur_bin = cur_bi
-        if kk_debug == 2:
-            print 'sat engine run_core: cur_bin ==', cur_bi
+        logger.debug('sat engine run_core: cur_bin == %d' % cur_bi)
         bkt_bin, bkt_lvl = self.preprocess(cur_bi)
 
         if bkt_bin != 0 or bkt_lvl != 0:
@@ -563,8 +482,7 @@ class SatEngine(object):
                 # conflict
                 bkt_bi, bkt_lvl = self.analysis(ccindex, cvindex)
                 if bkt_bi != cur_bi:      # unsat
-                    if kk_debug == 2:
-                        print '----\t\tpartial unsat'
+                    logger.debug('----\t\tpartial unsat')
                     return bkt_bi, bkt_lvl + 1, bkt_lvl
                 else:
                     self.backtrack_cur_bin(bkt_lvl)
@@ -639,10 +557,8 @@ class BinManager(object):
 
     # load clause bin data to sat engine
     def load_bin(self, bin_i, next_lvl, sat_engine):
-        if kk_debug == 2:
-            print '\n===============================================\n'
-        if kk_debug == 2:
-            print 'load_bin', bin_i + 1
+        logger.debug('\n===============================================\n')
+        logger.debug('load_bin %d' % (bin_i + 1))
         assert isinstance(sat_engine, SatEngine)
         assert bin_i >= 0
         sat_engine.c_array.clauses = self.clauses_bins[bin_i]
@@ -677,17 +593,15 @@ class BinManager(object):
             if index < len(self.lvl_state):
                 sat_engine.lvl_state += [self.lvl_state[index]]
 
-        if kk_debug == 2:
-            global print_debug_info
-            print_debug_info.bin_clauses(
-                self.clauses_bins[bin_i],
-                self.vars_bins[bin_i],
-                local_vs)
+        global gen_debug_info
+        logger.debug(gen_debug_info.bin_clauses(
+            self.clauses_bins[bin_i],
+            self.vars_bins[bin_i],
+            local_vs))
 
     # update sat engine's result to clauses bins
     def update_bin(self, bin_i, conflict, sat_engine):
-        if kk_debug == 2:
-            print 'update_bin', bin_i + 1
+        logger.debug('update_bin %d' % (bin_i + 1))
 
         self.n_oc_bin[bin_i] = sat_engine.c_array.n_oc
         self.n_lc_bin[bin_i] = sat_engine.c_array.n_lc
@@ -699,12 +613,11 @@ class BinManager(object):
                 v = self.vars_bins[bin_i][i]
                 self.global_vs[v] = copy.copy(sat_engine.local_vars.vs[i])
 
-        if kk_debug == 2:
-            global print_debug_info
-            print_debug_info.bin_clauses(
-                self.clauses_bins[bin_i],
-                self.vars_bins[bin_i],
-                sat_engine.local_vars.vs)
+        global gen_debug_info
+        logger.debug(gen_debug_info.bin_clauses(
+            self.clauses_bins[bin_i],
+            self.vars_bins[bin_i],
+            sat_engine.local_vars.vs))
 
     def find_global_bkt_lvl(self, bkt_lvl):
         ls = self.lvl_state[bkt_lvl - 1]
@@ -726,14 +639,14 @@ class BinManager(object):
                 bkt_lvl = 0
 
         # 找到回退的bin
-        if kk_debug == 2:
-            print 'find_global_bkt_lvl\n\tbkt_bin', bkt_bi, 'bkt_lvl', bkt_lvl
+        logger.debug('find_global_bkt_lvl\n\tbkt_bin %d bkt_lvl %d'
+                     % (bkt_bi, bkt_lvl))
         assert(self.lvl_state[bkt_lvl - 1].has_bkt is False)
         return bkt_bi, bkt_lvl
 
     def backtrack_across_bin(self, bkt_lvl):
-        if kk_debug == 2:
-            print 'backtrack across bin: bkt_lvl ==', bkt_lvl
+        str1 = 'backtrack across bin: bkt_lvl ==', bkt_lvl
+        logger.debug(str1)
         # 清除全局变量状态
         for vs in self.global_vs:
             value = vs.value
@@ -761,18 +674,15 @@ class BinManager(object):
             stemp += '%3d' % int(self.lvl_state[i].has_bkt)
             vtemp += '%3d' % (self.lvl_state[i].dcd_var + 1)
             btemp += '%3d' % int(self.lvl_state[i].dcd_bin)
-        if kk_debug == 2:
-            print ltemp
-        if kk_debug >= 1:
-            print stemp
-        if kk_debug == 2:
-            print vtemp
-            print btemp
+        logger.debug(ltemp)
+        logger.info(stemp)
+        logger.debug(vtemp)
+        logger.debug(btemp)
 
     def compute_s_bkt(self, lvl, bin_i, next_bi):
         # the s_bkt is monotone increasing, this guarantees the solver's
         # complete
-        if kk_debug == 2 or bin_i != next_bi - 1:
+        if logger.level <= logging.DEBUG or bin_i != next_bi - 1:
             self.print_bkted_lvl(lvl)
 
         if bin_i != next_bi - 1:
@@ -783,13 +693,10 @@ class BinManager(object):
                 else:
                     s_bkt = s_bkt * 2
 
-            if kk_debug >= 1:
-                print s_bkt, 'bin', bin_i
-            if s_bkt > self.s_bkt:
-                self.s_bkt = s_bkt
-            else:
-                print 'error in run compute_s_bkt'
-                exit()
+            assert(s_bkt > self.s_bkt)
+            self.s_bkt = s_bkt
+
+            logger.info('%d bin %d' % (s_bkt, bin_i))
 
     def test(self, filename):
         print ''
@@ -809,19 +716,97 @@ class BinManager(object):
                 if sat is False:
                     print 'test fail'
                     print 'bin', bi
-                    print 'clause', \
-                        convert_csr_clause_str(c, self.vars_bins[bi])
+                    cstr = gen_debug_info.csr_clause_str(c, self.vars_bins[bi])
+                    print 'clause', cstr
                     print 'vars_bins', [l + 1 for l in self.vars_bins[bi]]
                     print 'varsvalue', \
                         [varvalue[l] for l in self.vars_bins[bi]]
                     print ''
                     return
-        print 'test success'
-        print ''
+        logger.debug('test success\n')
+        print 'test success\n'
 
-#全局变量便于调试
-bin_manager = None
-sat_engine = None
+
+class GenDebugInfo(object):
+    """docstring for GenDebugInfo"""
+    def __init__(self, bin_manager):
+        self.bin_manager = bin_manager
+
+    def one_clause(self, c, local_vars, strtab):
+        vs = local_vars.vs
+        cc = []
+        value = []
+        implied = []
+        level = []
+        bini = []
+        has_bkt = []
+        reason = []
+        ls = self.bin_manager.lvl_state
+        for i in xrange(len(c)):
+            var = i + 1
+            if c[i] != 0:
+                if c[i] == 1:
+                    var = -var
+                cc += [var]
+                value += [vs[i].value]
+                implied += [vs[i].implied]
+                level += [vs[i].level]
+                bini += [ls[vs[i].level].dcd_bin]
+                has_bkt += [ls[vs[i].level].has_bkt]
+                reason += [local_vars.reason[i]]
+        str1 = ''
+        str1 += '%slits    %s\n' % (strtab, cc)
+        str1 += '%svalue   %s\n' % (strtab, value)
+        str1 += '%simplied %s\n' % (strtab, [int(l) for l in implied])
+        str1 += '%slevel   %s\n' % (strtab, level)
+        str1 += '%sbin     %s\n' % (strtab, bini)
+        str1 += '%sbkted   %s\n' % (strtab, [int(l) for l in has_bkt])
+        str1 += '%sreason  %s\n' % (strtab, reason)
+        return str1
+
+    def bin_clauses(self, clauses, variables, vs):
+        ci = 1
+        str1 = ''
+        for c in clauses:
+            strc = '\tc%d  ' % ci
+            # print len(c), len(variables)
+            for i in xrange(len(variables)):
+                # var = variables[i]+1
+                var = i + 1
+                if c[i] == 1:
+                    strc += str(-var) + ' '
+                elif c[i] == 2:
+                    strc += str(var) + ' '
+            str1 += strc + '\n'
+            ci += 1
+        str1 += '\tglobal vars %s\n' % [l + 1 for l in variables]
+        str1 += '\tlocal vars  %s\n' % [l + 1 for l in range(len(variables))]
+        str1 += '\tvalue       %s\n' % [l.value for l in vs]
+        str1 += '\timplied     %s\n' % [int(l.implied) for l in vs]
+        str1 += '\tlevel       %s\n' % [l.level for l in vs]
+        return str1
+
+    def convert_csr_clause(self, c):
+        l = []
+        for i in xrange(len(c)):
+            if c[i] != 0:
+                var = i + 1
+                if c[i] == 1:
+                    l += [-var]
+                elif c[i] == 2:
+                    l += [var]
+        return l
+
+    def csr_clause_str(self, c, varl):
+        strc = ''
+        for i in xrange(len(varl)):
+            if varl[i] != 0:
+                var = varl[i] + 1
+                if c[i] == 1:
+                    strc += str(-var) + ' '
+                elif c[i] == 2:
+                    strc += str(var) + ' '
+        return strc
 
 
 def control(filename):
@@ -832,8 +817,8 @@ def control(filename):
 
     sat_engine = SatEngine(bin_manager.cmax, bin_manager.vmax)
 
-    global print_debug_info
-    print_debug_info = PrintDebugInfo(bin_manager)
+    global gen_debug_info
+    gen_debug_info = GenDebugInfo(bin_manager)
 
     bin_i = 1
     next_lvl = 1
@@ -848,6 +833,7 @@ def control(filename):
                 # partial unsat
                 bkt_bi, bkt_lvl = bin_manager.find_global_bkt_lvl(bkt_lvl)
                 if bkt_bi == 0:
+                    logger.debug('\nunsatisfiable')
                     print '\nunsatisfiable'
                     return 'unsat'
                 bin_manager.backtrack_across_bin(bkt_lvl)
@@ -861,6 +847,7 @@ def control(filename):
 
             bin_i = next_bi
 
+    logger.debug('\nsatisfiable')
     print '\nsatisfiable'
 
     # test the satisfiability
@@ -873,7 +860,7 @@ def main():
     parser.add_argument('--filename',
                         type=str,
                         help='input filename',
-                        default='../partitionCNF/cnfdata/bram_bins_unsat7.txt'
+                        default='testdata/bram_bins_unsat7.txt'
                         )
     parser.add_argument('--debug',
                         type=int,
@@ -885,7 +872,7 @@ def main():
     # filename = '../partitionCNF/cnfdata/bram_bins_uf20-01.txt'
     # filename = '../partitionCNF/cnfdata/bram_bins_uuf50-01.cnf'
     # filename = '../partitionCNF/cnfdata/bram_bins_uf20-10.txt'
-    filename = 'bram.txt'
+    # filename = 'bram.txt'
 
     global kk_debug
     kk_debug = args.debug
@@ -893,6 +880,9 @@ def main():
     # print kk_debug, args.debug
     # return
 
+    logging.basicConfig(filename=os.path.join(os.getcwd(), 'debug.info.todo'),
+                        format='',
+                        filemode='w')
     control(filename)
 
 if __name__ == '__main__':
@@ -902,5 +892,4 @@ if __name__ == '__main__':
     # profile.run("main()")
     main()
     finish = clock()
-    print(finish - start)
-    plt.show()
+    print 'runtime: %lfs' % (finish - start)
