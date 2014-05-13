@@ -1,0 +1,27 @@
+total num of bins      :	3
+total num of variables :	7
+total num of clauses   :	7
+cmax of each bin       :	4
+vmax of each bin       :	8
+
+bin 1
+	variables : 1
+		1
+	clauses : 1
+		2 0 0 0 0 0 0 0 
+
+bin 2
+	variables : 5
+		2 3 4 5 6
+	clauses : 3
+		2 0 1 0 0 0 0 0 
+		0 2 0 1 0 0 0 0 
+		0 0 2 0 2 0 0 0 
+
+bin 3
+	variables : 5
+		1 2 5 6 7
+	clauses : 3
+		1 0 2 0 2 0 0 0 
+		0 2 0 1 1 0 0 0 
+		0 2 0 0 2 0 0 0 

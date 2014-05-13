@@ -1,0 +1,1396 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"dcd",
+				"dcd_bin"
+			],
+			[
+				"lvl",
+				"lvl_state"
+			],
+			[
+				"SatE",
+				"SatEngine	(global, class)"
+			],
+			[
+				"is",
+				"isinstance	(builtin, function)"
+			],
+			[
+				"L",
+				"LvlState"
+			],
+			[
+				"cl",
+				"clause"
+			],
+			[
+				"init_",
+				"init_clause_state"
+			],
+			[
+				"run_",
+				"run_all(filename)	(global, function)"
+			],
+			[
+				"res",
+				"resultfilename"
+			],
+			[
+				"bkt",
+				"bkt_lvl"
+			],
+			[
+				"next",
+				"next_lvl"
+			],
+			[
+				"find",
+				"find_bkt_lvl(clause)	(attribute, function)"
+			],
+			[
+				"ar",
+				"args"
+			],
+			[
+				"bram_uu",
+				"bram_bins_uuf50-01.cnf"
+			],
+			[
+				"sat_bin",
+				"sat_bin_python"
+			],
+			[
+				"nex",
+				"next_lvl"
+			],
+			[
+				"bac",
+				"backtrack_cur_bin"
+			],
+			[
+				"binsuu",
+				"bins_uuf50-01.cnf"
+			],
+			[
+				"uu",
+				"uuf50-01.cnf"
+			],
+			[
+				"bins_",
+				"bram_bins_uf20"
+			],
+			[
+				"vs",
+				"global_vs"
+			],
+			[
+				"bram",
+				"bram_bins_unsat7.txt"
+			],
+			[
+				"again",
+				"again_cnf_unsat7-.txt"
+			],
+			[
+				"conver",
+				"convert_csr_to_bram_data.py"
+			],
+			[
+				"par",
+				"partitionCNF"
+			],
+			[
+				"pysa",
+				"pysat_cocu.py"
+			],
+			[
+				"convert",
+				"convert_csr_clause_str"
+			],
+			[
+				"def",
+				"default"
+			],
+			[
+				"print",
+				"print_one_clause_info"
+			],
+			[
+				"parc",
+				"../partitionCNF/"
+			],
+			[
+				"sat",
+				"sat_shedskin"
+			],
+			[
+				"ag",
+				"again_bins"
+			],
+			[
+				"lis",
+				"liststrip"
+			],
+			[
+				"convert_bram_toc",
+				"convert_bram_to_cnf_data.py"
+			],
+			[
+				"conv",
+				"convert_bram_to_csr_data(multi-bin).py"
+			],
+			[
+				"c_max",
+				"c_max_lvl"
+			],
+			[
+				"cur",
+				"cur_lvl"
+			],
+			[
+				"bk",
+				"bkt_lvl"
+			],
+			[
+				"sate",
+				"sat_engine"
+			],
+			[
+				"re",
+				"restarts"
+			],
+			[
+				"SAT",
+				"SATISFIABLE"
+			],
+			[
+				"c",
+				"clauses"
+			],
+			[
+				"clauses_",
+				"clauses_csr"
+			],
+			[
+				"update",
+				"update_clause_state"
+			],
+			[
+				"nc",
+				"nc_bin"
+			],
+			[
+				"part",
+				"partitioncnf_2.py"
+			],
+			[
+				"va",
+				"value"
+			],
+			[
+				"bc",
+				"backtrack"
+			],
+			[
+				"a",
+				"analysis"
+			],
+			[
+				"l",
+				"level"
+			],
+			[
+				"cla",
+				"clauses"
+			],
+			[
+				"var",
+				"var_state"
+			],
+			[
+				"v",
+				"vbin"
+			],
+			[
+				"s",
+				"self"
+			],
+			[
+				"i",
+				"id"
+			],
+			[
+				"f",
+				"for	For Loop"
+			],
+			[
+				"variables",
+				"variables"
+			],
+			[
+				"po",
+				"pop_trail"
+			],
+			[
+				"brasi",
+				"bram_assign_stack_i"
+			],
+			[
+				"WVS",
+				"WIDTH_VAR_STATES-1"
+			],
+			[
+				"ADDVS",
+				"ADDR_WIDTH_VARS_STATES-1"
+			],
+			[
+				"app",
+				"apply_backtrack"
+			],
+			[
+				"sta",
+				"start_backtrck"
+			],
+			[
+				"WID",
+				"WIDTH_BIN_VARS"
+			],
+			[
+				"N",
+				"NUM_VARS_A_BIN-1"
+			],
+			[
+				"up",
+				"UPDATE_AND_LOAD"
+			],
+			[
+				"VAR",
+				"vars_cnt"
+			],
+			[
+				"ua",
+				"UPDATE_AND_LOAD"
+			],
+			[
+				"c_s",
+				"c_state"
+			],
+			[
+				"start_load_",
+				"start_load_update"
+			],
+			[
+				"st",
+				"start_update_load"
+			],
+			[
+				"bram_var",
+				"bram_var_state_i"
+			],
+			[
+				"ap",
+				"apply_update_load"
+			],
+			[
+				"validvat",
+				"valid_var_state_tosat_w"
+			],
+			[
+				"validvar",
+				"valid_var_state_update_minlevel_o"
+			],
+			[
+				"rdh",
+				"var_state_rdhere_or"
+			],
+			[
+				"valid",
+				"rdhere_valid_r"
+			],
+			[
+				"rdherd",
+				"rdherd_valid_r"
+			],
+			[
+				"valid_var",
+				"valid_var_id_frombram_i"
+			],
+			[
+				"validv",
+				"valid_var_state_load_r"
+			],
+			[
+				"varf",
+				"var_state_frombram_i"
+			],
+			[
+				"n",
+				"need_update"
+			],
+			[
+				"file",
+				"file_name"
+			],
+			[
+				"rd",
+				"rd_vars_cnt"
+			],
+			[
+				"c_",
+				"c_wr_state"
+			],
+			[
+				"Nv",
+				"NUM_VARS_A_BIN-1"
+			],
+			[
+				"lear",
+				"learnt_lit_r"
+			],
+			[
+				"te",
+				"test_matrix_mul1"
+			],
+			[
+				"sh",
+				"share_len"
+			],
+			[
+				"co",
+				"common_len"
+			],
+			[
+				"str",
+				"strend"
+			],
+			[
+				"as",
+				"assigned_var_value_r"
+			],
+			[
+				"find_imply_",
+				"find_imply_cur"
+			],
+			[
+				"Loadb",
+				"LOAD_BIN"
+			],
+			[
+				"rdvar",
+				"rd_vars_states_o"
+			],
+			[
+				"lb",
+				"LOAD_BIN"
+			],
+			[
+				"U",
+				"UPDATE_BIN"
+			],
+			[
+				"vars",
+				"vars_states_i"
+			],
+			[
+				"findr",
+				"find_conflict_r"
+			],
+			[
+				"d",
+				"done_imply_o"
+			],
+			[
+				"fin",
+				"find_conflict"
+			],
+			[
+				"b",
+				"begin	begin"
+			],
+			[
+				"p",
+				"powerpc"
+			],
+			[
+				"NV",
+				"NUM_VARS_A_BIN"
+			],
+			[
+				"NU",
+				"NUM_CLAUSES_A_BIN"
+			],
+			[
+				"cco",
+				"cclause_drv_o"
+			],
+			[
+				"w",
+				"wirename"
+			],
+			[
+				"varbr",
+				"var_bar_or"
+			],
+			[
+				"varb",
+				"var_bar_i"
+			],
+			[
+				"load",
+				"load_clauses_i"
+			],
+			[
+				"ass",
+				"assign	assign"
+			],
+			[
+				"GO",
+				"global_unsat_o"
+			],
+			[
+				"gs",
+				"GLOBAL_SAT"
+			],
+			[
+				"UP",
+				"UPDATE_DONE"
+			],
+			[
+				"upda",
+				"update_vars_states_o"
+			],
+			[
+				"lo",
+				"load_done"
+			],
+			[
+				"bram_addr_vars_o",
+				"bram_addr_vars_o"
+			],
+			[
+				"addrvar",
+				"ADDR_WIDTH_VARS_STATES"
+			],
+			[
+				"sl",
+				"START_LOAD"
+			],
+			[
+				"r_",
+				"r_clauses_cnt"
+			],
+			[
+				"S",
+				"START_LOAD"
+			],
+			[
+				"c_in",
+				"c_index"
+			],
+			[
+				"c_r",
+				"c_rank"
+			],
+			[
+				"c_ra",
+				"c_rank_best"
+			],
+			[
+				"com",
+				"compute_clauses_gravity"
+			],
+			[
+				"nr",
+				"nrofvars"
+			],
+			[
+				"x",
+				"x_str"
+			],
+			[
+				"read",
+				"read_vlen_clen"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 81.0,
+		"selected_items":
+		[
+			[
+				"pep8",
+				"Python: Disable Pep8 Linting On View"
+			],
+			[
+				"test",
+				"PythonTest: Run selected tests"
+			],
+			[
+				"pepa",
+				"User: Python PEP8 Autoformat"
+			],
+			[
+				"python lint",
+				"User: Python Flake8 Lint"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Snippet: if __name__ == '__main__'"
+			],
+			[
+				"pep",
+				"Python: Disable Pep8 Linting On View"
+			],
+			[
+				"python",
+				"Python: Enable Pep8 Linting On View"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"python b",
+				"Python Breakpoints: Toggle"
+			],
+			[
+				"python ",
+				"Python Breakpoints: Goto"
+			],
+			[
+				"ip",
+				"SublimeREPL: Python - IPython"
+			],
+			[
+				"ipy",
+				"SublimeREPL: Python - IPython"
+			],
+			[
+				"i",
+				"SublimeREPL: Python - IPython"
+			],
+			[
+				"pdb",
+				"SublimeREPL: Python - PDB current file"
+			],
+			[
+				"syntodo",
+				"Set Syntax: ToDone"
+			],
+			[
+				"perl",
+				"Set Syntax: ModernPerl"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"ipyt",
+				"SublimeREPL: Python - IPython"
+			],
+			[
+				"todone",
+				"Set Syntax: ToDone"
+			],
+			[
+				"syn ve",
+				"Set Syntax: verilog"
+			],
+			[
+				"syn ver",
+				"Set Syntax: Verilog"
+			],
+			[
+				"synta ssra",
+				"Set Syntax: Sublime Snippet (Raw)"
+			],
+			[
+				"aaa con",
+				"z:AAAPackageDev: Convert (YAML, JSON, PList) to…"
+			],
+			[
+				"aaa co",
+				"z:AAAPackageDev: Convert (YAML, JSON, PList) to…"
+			],
+			[
+				"aaa",
+				"z:AAAPackageDev: New JSON Syntax Definition"
+			],
+			[
+				"SYNta json",
+				"Set Syntax: Sublime Text Syntax Def (JSON)"
+			],
+			[
+				"SYN ",
+				"Set Syntax: JSON"
+			],
+			[
+				"AAA",
+				"z:AAAPackageDev: New JSON Syntax Definition"
+			],
+			[
+				"RE",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"synta v",
+				"Set Syntax: SystemVerilog"
+			],
+			[
+				"synt sys",
+				"Set Syntax: System Verilog"
+			],
+			[
+				"sy v",
+				"Set Syntax: verilog"
+			],
+			[
+				"synv",
+				"Set Syntax: SystemVerilog"
+			],
+			[
+				"synt ve",
+				"Set Syntax: SystemVerilog"
+			],
+			[
+				"syntax vr",
+				"Set Syntax: verilog"
+			],
+			[
+				"syntax ver",
+				"Set Syntax: SystemVerilog"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"re",
+				"Package Control: Remove Package"
+			],
+			[
+				"c",
+				"CTags: Rebuild Tags"
+			],
+			[
+				"ctags",
+				"CTags: Show Symbols (file)"
+			],
+			[
+				"syntax",
+				"Set Syntax: Makefile"
+			],
+			[
+				"syntax d",
+				"Set Syntax: D"
+			],
+			[
+				"syndo",
+				"Set Syntax: Graphviz (DOT)"
+			],
+			[
+				"synt do",
+				"Set Syntax: ToDone"
+			],
+			[
+				"synt",
+				"Set Syntax: Perl"
+			],
+			[
+				"syn",
+				"Set Syntax: Makefile"
+			],
+			[
+				"syn mat",
+				"Set Syntax: MATLAB"
+			],
+			[
+				"snippet",
+				"Snippet: always"
+			],
+			[
+				"snipp",
+				"Snippet: Method"
+			],
+			[
+				"Snippet: ",
+				"Snippet: if __name__ == '__main__'"
+			],
+			[
+				"syn do",
+				"Set Syntax: Markdown"
+			],
+			[
+				"todo",
+				"Set Syntax: ToDone"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"find",
+				"Find: In Project"
+			],
+			[
+				"sublimerepl",
+				"SublimeREPL: Python"
+			],
+			[
+				"forma",
+				"User: Python PEP8 Autoformat"
+			]
+		],
+		"width": 520.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"sat.py",
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/E/sat/workspace/sat_bin_python/sat_bin_array_0.py",
+		"/E/sat/workspace/sat_bin_python/testsomething.py",
+		"/E/sat/workspace/sat_bin_python/sat_shedskin.py",
+		"/E/sat/workspace/sat_bin_python/sat_bin_array_1(error).py",
+		"/E/sat/workspace/partitionCNF/bram_bins_unsat7.txt",
+		"/E/sat/workspace/partitionCNF/again_bins_unsat7.txt",
+		"/E/sat/workspace/partitionCNF/again_cnf_unsat7-.txt",
+		"/E/sat/workspace/sat_bin_python/debug.info.todo",
+		"/E/sat/workspace/partitionCNF/run-all.py",
+		"/E/sat/workspace/partitionCNF/partitioncnf_2.py",
+		"/E/sat/workspace/partitionCNF/convert_csr_to_bram_data.py",
+		"/E/sat/workspace/sat_bin_python/sat_bin_array(lvlstate).py",
+		"/E/sat/workspace/partitionCNF/partitioncnf_1.py",
+		"/E/sat/workspace/partitionCNF/run-file.bat",
+		"/E/sat/workspace/partitionCNF/run_satbin.bat",
+		"/E/sat/workspace/partitionCNF/run-all.js",
+		"/E/sat/workspace/partitionCNF/run_partition&convert.bat",
+		"/E/sat/workspace/partitionCNF/convert_bram_to_csr_data.py",
+		"/E/sat/workspace/partitionCNF/convert_bram_to_cnf_data.py",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/Python.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/E/sat/workspace/partitionCNF/convert_csr_to_cnf_data.py",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog Automatic/Default (Windows).sublime-keymap",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Python PEP8 Autoformat/Default (Windows).sublime-keymap",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Python Flake8 Lint/Default (Windows).sublime-keymap",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/PythonImproved.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/Distraction Free.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog/verilog.tmLanguage",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/python-kk/pythonkk.tmlanguge",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/ToDone.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/SublimePythonIDE/SublimePython.sublime-settings",
+		"/E/sat/workspace/partitionCNF/convert_csr_to_bram_data(multi-bin).py",
+		"/E/sat/workspace/sat_bin_verilog/clause_array.v",
+		"/E/sat/workspace/partitionCNF/bins_uuf50-01.cnf",
+		"/E/sat/workspace/partitionCNF/bins_uf20-01.txt",
+		"/E/sat/workspace/sat_bin_verilog/base.v",
+		"/E/sat/workspace/sat_bin_python/pysat_cocu_result.txt",
+		"/E/sat/workspace/sat_bin_python/bram_bins_unsat7.txt",
+		"/E/sat/workspace/partitionCNF/again_cnf_unsat7.txt",
+		"/E/sat/workspace/pysat-cdcl-master/pysat/pysat.py",
+		"/E/sat/workspace/partitionCNF/convert_bram_to_csr_data(multi-bin).py",
+		"/E/sat/workspace/partitionCNF/sat_shedskin.py",
+		"/E/sat/workspace/partitionCNF/again_bins_uf20-01.txt",
+		"/E/sat/workspace/sat_bin_python/sat_bin_array.py",
+		"/E/sat/workspace/partitionCNF/bram_bins_uf20-01.txt",
+		"/E/sat/workspace/partitionCNF/again_cnf_uf20-01.txt",
+		"/E/sat/workspace/sat_bin_verilog/bram_w40.v",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/bram_w40/simulation/bram_w40_tb.vhd",
+		"/E/sat/workspace/sat_bin_python/bram_unsat7.txt",
+		"/E/sat/workspace/sat_bin_verilog/print.py",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/blk_mem_gen_v7_3/implement/planAhead_ise.bat",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/blk_mem_gen_v7_3/implement/implement.bat",
+		"/E/sat/workspace/sat_bin_verilog/decision.v",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/bram_w12_d1024/simulation/functional/ucli_commands.key",
+		"/E/sat/workspace/sat_bin_verilog/sat_engine.v",
+		"/E/sat/reference/benchmarks/set-race-tb-2006/filter_result.pl",
+		"/E/sat/reference/benchmarks/set-race-tb-2006/minisat_batch_result.txt",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/perl.sublime-build",
+		"/E/sat/reference/benchmarks/set-race-tb-2006/SAT-Race 2006.pdf.txt",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/perl/perl.sublime-build",
+		"/E/study/programming/perl/perl 示例/crcgen.pl",
+		"/C/Users/Kaen Chan/Downloads/python/pypa-setuptools-a3d16c5f7443/README.txt",
+		"/E/sat/workspace/partitionCNF/gen_bin_bram_data(one-bin).py",
+		"/E/sat/workspace/sulley/docs/generate_epydocs.bat",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/verilog.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/Verilog Automatic.sublime-settings",
+		"/E/sat/workspace/partitionCNF/gen_bin_bram_data.py",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/blk_mem_gen_v7_3/example_design/blk_mem_gen_v7_3_prod.vhd",
+		"/E/sat/workspace/pysat_shedskin/pysat/testbench_statistics.py",
+		"/E/sat/workspace/sat_bin_verilog/terminal_cell.v",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/coregen.cgc",
+		"/E/sat/workspace/pysat_shedskin/.spyderproject",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/bram_w30_d1024.v",
+		"/E/sat/workspace/sat_bin_verilog/ipcore/bram_w30_d1024.asy",
+		"/E/sat/workspace/sat_bin_verilog/load_update_bin.v",
+		"/E/sat/workspace/partitionCNF/pack_bin_uf20-01.cnf",
+		"/E/sat/workspace/partitionCNF/partitioncnf_3.py",
+		"/E/sat/workspace/verilog_sat_bin/control.v",
+		"/E/sat/workspace/verilog_sat_bin/base_cell.v",
+		"/E/sat/workspace/verilog_sat_bin/base.v",
+		"/E/sat/workspace/verilog_sat_bin/print.py",
+		"/E/sat/workspace/verilog_sat_bin/load_update_bin.v",
+		"/E/sat/workspace/verilog_sat_bin/regs_vid_state.v",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w30_d1024.v",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w30_d1024/simulation/bram_w30_d1024_tb.vhd",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w18_d1024.v",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w18_1024.veo",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w18_1024.v",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w18_1024.asy",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w18_1024/example_design/bram_w18_1024_exdes.ucf",
+		"/E/sat/workspace/verilog_sat_bin/bram_w40.v",
+		"/E/sat/workspace/partitionCNF/uf20-01.txt",
+		"/E/sat/workspace/verilog_sat_bin/ipcore/bram_w30_d1024.asy",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog-Automatic-kk/.gitignore",
+		"/E/sat/workspace/verilog_sat_bin/clause_array.v",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/ToDone/readme.todo",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/ToDone/ToDone.tmLanguage",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/ToDone/package-metadata.json",
+		"/E/sat/workspace/partitionCNF/onebin_10_8.cnf.txt",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog-Automatic-kk/Verilog Automatic.py",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog-Automatic-kk/Main.sublime-menu",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog-Automatic-kk/README.md",
+		"/E/sat/workspace/verilog_sat_bin/wc.py",
+		"/E/sat/workspace/verilog_sat_bin/decision.v",
+		"/E/sat/workspace/verilog_sat_bin/terminal_cell.v",
+		"/E/sat/workspace/verilog_sat_bin/clause_cell.v",
+		"/E/sat/workspace/verilog_sat_bin/clause.v",
+		"/E/sat/workspace/python_ctypes/find_type.py",
+		"/E/sat/workspace/python_ctypes/LoadTest_ctypes.py",
+		"/E/sat/reference/book/稀疏矩阵/python.tmlanguge",
+		"/E/sat/workspace/verilog_sat_bin/python.tmlanguge",
+		"/F/software/sublime/packet/Verilog/Verilog.tmLanguage",
+		"/E/sat/reference/book/稀疏矩阵/Verilog.sublime-package",
+		"/E/sat/workspace/verilog_sat_bin/temp.txt",
+		"/E/sat/workspace/sublime_tmlanguge/test.ssraw",
+		"/E/sat/workspace/sublime_tmlanguge/test.tmLanguage",
+		"/E/sat/workspace/sublime_tmlanguge/test.JSON-tmLanguage",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/Verilog/verilog.tmLanguage.kk",
+		"/E/sat/workspace/sublime_tmlanguge/test.jscon-tmlanguage",
+		"/C/Users/Kaen Chan/Downloads/Verilog.sublime-package",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/User/SystemVerilog.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Local/Sublime Text 3/Cache/C++/C.tmLanguage.cache",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+		"/C/Users/Kaen Chan/AppData/Local/Sublime Text 3/Cache/SystemVerilog/SystemVerilog.tmLanguage.cache",
+		"/C/Users/Kaen Chan/AppData/Roaming/Sublime Text 3/Installed Packages/SystemVerilog.sublime-package"
+	],
+	"find":
+	{
+		"height": 30.0
+	},
+	"find_in_files":
+	{
+		"height": 102.0,
+		"where_history":
+		[
+			"E:\\sat\\reference\\benchmarks\\set-race-tb-2006",
+			"C:\\Users\\Kaen Chan\\AppData\\Roaming\\Sublime Text 3\\Packages\\Verilog-Automatic-kk",
+			"E:\\sat\\workspace\\verilog_sat_bin",
+			"E:\\sat\\workspace\\minisat_v1.14\\src",
+			"I:\\work\\玲儿\\workspace2014.2.21\\do_src",
+			"<open files>,<open folders>"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"self.clauses",
+			"[v]",
+			"lvl_state",
+			"lss",
+			"pass",
+			"cur_lvl",
+			"n_oc_bin",
+			"bin_i",
+			"self",
+			"global_vs",
+			"self",
+			"run_core",
+			"self.global_vs[i]",
+			"global_vs",
+			"[i]",
+			"global_vs",
+			"self.sat_engine",
+			"print_clause_info",
+			"self.sat_engine",
+			"LvlState",
+			"VarState",
+			"ClasueArray",
+			"find_learntc_inserti",
+			"clause",
+			".cs",
+			"SatBin",
+			"self.",
+			"[",
+			"]",
+			"[i]",
+			"firstbcp",
+			"update_bcp_clause_state",
+			"reason",
+			"cbin_best",
+			"kk_debug",
+			"print",
+			"kk_debug",
+			"print",
+			"neighbors",
+			"iterations",
+			"kk_debug",
+			"kk_debug =",
+			"kk_debug",
+			"\\",
+			"the",
+			"bkt_bin",
+			"convert_csr_to_bram_data",
+			"cnf",
+			"uf20",
+			"partitioncnf_2",
+			"resulti",
+			"file",
+			"cindex",
+			"isconflict",
+			"update_bin",
+			"learntc",
+			"load_bin 23",
+			"find_bkt_lvl",
+			"kk",
+			"bkted   0  1  1  1  1  0  1  1  1  1",
+			"0  1  1  1  1  0  1  1  1  1",
+			"1555456",
+			"0  1  1  1  1  0  1  1  1  1",
+			"conflict",
+			"0  1  1  1  1  0  1  1  1  1  0",
+			"4 18 10  6",
+			"18 10  6",
+			"bkt_bin 1 bkt_lvl 5",
+			"conflict",
+			"global_vs",
+			"global_var",
+			"global_vs",
+			"VarState",
+			"global_vs",
+			"conflict",
+			"bkted",
+			"is_bkt",
+			"run_core",
+			"preprocess",
+			"isconf",
+			"preprocessing",
+			"c_isconflict",
+			"find_bkt_lvl",
+			"has_bkted",
+			"bkted",
+			"is_bkt",
+			"max_idx",
+			"mindex",
+			"c_max_lvl_i",
+			"find_learntc_inserti",
+			"ccindex",
+			"find_bkt_lvl",
+			"fand_bkt_lvl",
+			"self",
+			"== True",
+			"== Ture",
+			"== False",
+			"1126453957623808",
+			"backtrack_cur_bin",
+			"bkt_bin 7 bkt_lvl 23",
+			"conflict",
+			"conf",
+			"gvar 34",
+			"conf",
+			"gvar 5 value 1 level 19",
+			"gvar 5 value 1 level 21",
+			"50",
+			"gvar",
+			"gvar 50",
+			"gvar",
+			"gvar 50",
+			"50",
+			"gvar 50",
+			"next_lvl",
+			"conflict",
+			"gvar 1 value 1",
+			"gvar",
+			"cur_lvl",
+			"load_bin 7",
+			"level 18",
+			"level 20",
+			"decide_list",
+			"bindlit",
+			"BindLit",
+			"bindlit",
+			"BindLit",
+			"bkt_bin -1 bkt_lvl 22",
+			"load_bin 28"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"global_var",
+			"is Ture",
+			"is False",
+			"    ",
+			"load_clauses_i",
+			"",
+			"var_state_",
+			"\\b",
+			"var_state",
+			"bram_var_state_i",
+			"bram_var_id_i",
+			"var_id_i",
+			"bram_vars_id_i",
+			"data_update_vars_states_o",
+			"data_learnt_clauses_o",
+			"load_state",
+			"update_state",
+			"STATE_load_done",
+			"STATE_load_bin",
+			"STATE_load_idle",
+			"ANALYSIS",
+			"NUM_VARS_A_BIN",
+			"\\t",
+			"NUM_VARS_A_BIN",
+			"NUM_CLAUSES_A_BIN",
+			"NUM_VARS_A_BIN",
+			"NUM_VARS_A_BIN\nNUM_VARS_A_BIN\nNUM_VARS_A_BIN",
+			"NUM_VARS_A_BIN",
+			"BIN_VARS_NUM",
+			"BIN_CLAUSES_NUM",
+			" : 0",
+			"-1 :",
+			"learnt_clauses_valid_i",
+			"learnt_clauses_i",
+			"wr",
+			"UPDATE",
+			"LOAD_BIN",
+			"n_rd_state",
+			"c_rd_state",
+			"rd_clauses_cnt",
+			"rd_vars_cnt",
+			"out",
+			"[i]",
+			" ",
+			"\\t",
+			"\\n",
+			" \\n",
+			"\\n ",
+			"/",
+			"country_cited",
+			"country_citing",
+			"result1_object",
+			"/",
+			"100e6"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 30.0
+	},
+	"input":
+	{
+		"height": 38.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "sat_shedskin.sublime-project",
+	"replace":
+	{
+		"height": 56.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"satl",
+				"sat_bin_python\\sat_bin_lvlstate.py"
+			],
+			[
+				"sata",
+				"sat_bin_python\\sat_bin_array.py"
+			],
+			[
+				"sat",
+				"sat_bin_python\\sat_bin_array.py"
+			],
+			[
+				"binsuu",
+				"partitionCNF\\bins_uuf50-01.cnf"
+			],
+			[
+				"par",
+				"partitionCNF\\partitioncnf_2.py"
+			],
+			[
+				"debug",
+				"sat_bin_python\\debug.info.todo"
+			],
+			[
+				"pysat",
+				"sat_bin_python\\pysat_cocu.py"
+			],
+			[
+				"pys",
+				"sat_bin_python\\pysat.py"
+			],
+			[
+				"sats",
+				"sat_bin_python\\sat_shedskin.py"
+			],
+			[
+				"satsh",
+				"partitionCNF\\sat_shedskin.py"
+			],
+			[
+				"brambins",
+				"partitionCNF\\bram_bins_uf20-01.txt"
+			],
+			[
+				"satb",
+				"sat_bin_python\\sat_bin_array.py"
+			],
+			[
+				"deinfo",
+				"sat_bin_python\\debug.info.todo"
+			],
+			[
+				"genib",
+				"partitionCNF\\gen_bin_bram_data(one-bin).py"
+			],
+			[
+				"brambin",
+				"partitionCNF\\bram_bins_uf20-01.txt"
+			],
+			[
+				"genpy",
+				"partitionCNF\\gen_bin_bram_data.py"
+			],
+			[
+				"bramw30d.v",
+				"sat_bin_verilog\\ipcore\\bram_w30_d1024.v"
+			],
+			[
+				"parti",
+				"partitionCNF\\partitioncnf_2.py"
+			],
+			[
+				"bram_w18.v",
+				"verilog_sat_bin\\ipcore\\bram_w18_d1024.v"
+			],
+			[
+				"up",
+				"verilog_sat_bin\\load_update_bin.v"
+			],
+			[
+				"con",
+				"verilog_sat_bin\\control.v"
+			],
+			[
+				"l",
+				"verilog_sat_bin\\load_update_bin.v"
+			],
+			[
+				"ba",
+				"verilog_sat_bin\\base.v"
+			],
+			[
+				"bas",
+				"verilog_sat_bin\\base_cell.v"
+			],
+			[
+				"loadu",
+				"verilog_sat_bin\\load_update_bin.v"
+			],
+			[
+				"uf",
+				"partitionCNF\\uf20-01.txt"
+			],
+			[
+				"parti1",
+				"partitionCNF\\partitioncnf_1.py"
+			],
+			[
+				"d",
+				"verilog_sat_bin\\decision.v"
+			],
+			[
+				"basec",
+				"verilog_sat_bin\\base_cell.v"
+			],
+			[
+				"co",
+				"verilog_sat_bin\\control.v"
+			],
+			[
+				"cl",
+				"verilog_sat_bin\\clause.v"
+			],
+			[
+				"base",
+				"verilog_sat_bin\\base_cell.v"
+			],
+			[
+				"de",
+				"verilog_sat_bin\\decision.v"
+			],
+			[
+				"ter",
+				"verilog_sat_bin\\terminal_cell.v"
+			],
+			[
+				"cc",
+				"verilog_sat_bin\\clause_cell.v"
+			],
+			[
+				"t",
+				"verilog_sat_bin\\terminal_cell.v"
+			],
+			[
+				"c",
+				"control.v"
+			],
+			[
+				"",
+				"cell_clause.v"
+			],
+			[
+				"s",
+				"src\\Solver.h"
+			],
+			[
+				"so",
+				"src\\core\\Solver.cpp"
+			],
+			[
+				"solver.h",
+				"src\\core\\Solver.h"
+			],
+			[
+				"core.v",
+				"UHD-Mirror-release_003_005_002\\fpga\\usrp2\\top\\N2x0\\u2plus_core.v"
+			],
+			[
+				"cordic",
+				"fpga\\usrp2\\sdr_lib\\cordic.v"
+			],
+			[
+				"sover.cpp",
+				"src\\core\\Solver.cpp"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 201.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
