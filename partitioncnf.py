@@ -299,9 +299,6 @@ vmax = 8
 
 def run(filename, resultfilename):
     times = 10
-    global cmax, vmax
-    cmax = 4
-    vmax = 8
     # filename = 'uf20-01.txt'
     # filename = 'simon-s02b-r4b1k1.1.cnf'
     cnf = [l.strip().split() for l in file(filename) if l[0] not in 'c%0\n']

@@ -5,24 +5,16 @@
 # 没有implication graph
 
 import argparse
-import copy
 import logging
 import os
+from time import clock
 
 #全局变量便于调试
 bin_manager = None
 sat_engine = None
-# 定义日志级别为WARNING级别
-# CRITICAL    50
-# ERROR       40
-# WARNING     30
-# INFO        20
-# DEBUG       10
-# NOTSET      0
-logger = logging.getLogger()
-logger.setLevel(logging.WARNING)
-# logger.setLevel(logging.INFO)
-# logger.setLevel(logging.DEBUG)
+logger = None
+CNT_ACROSS_BKT = 100    # 控制print_bkted_lvl打印输出的间隔
+TIME_OUT_LIMIT = 60     # 执行时间限制，单位s
 
 
 class VarState(object):
@@ -105,7 +97,7 @@ class ClauseArray(object):
             c = self.clauses[i]
             c_max_lvl = 0
             for j, v in enumerate(c):
-                if v != 0:
+                if v != 0 and j < len(vs):
                     if v == vs[j].value:
                         # the clause is sat
                         self.csat[i] = True
@@ -193,9 +185,7 @@ class LocalVars(object):
     """docstring for LocalVarStates"""
 
     def __init__(self, vmax):
-        self.vs = []
-        for i in xrange(vmax):
-            self.vs += [VarState()]
+        self.vs = []  # 在load时进行赋值
 
         self.conflict_tag = [0] * vmax   # 冲突标志，用于analysis中生成learntc
         self.reason = [0] * vmax         # 原因子句的编号
@@ -248,9 +238,8 @@ class SatEngine(object):
     def preprocess(self, cur_bi):
         logger.debug('--\tpreprocess')
 
+        conflict, ccindex = self.c_array.init_state(self.local_vars.vs)
         while 1:
-            conflict, ccindex = self.c_array.init_state(self.local_vars.vs)
-
             clauses = self.c_array.clauses
             if conflict is True:
                 # find conflict
@@ -265,7 +254,7 @@ class SatEngine(object):
 
                 if cur_bi == bkt_bin:
                     # 当前bin中进行回退
-                    self.backtrack_cur_bin(bkt_lvl)
+                    conflict, ccindex = self.backtrack_cur_bin(bkt_lvl)
                     continue
 
                 self.cur_lvl = bkt_lvl + 1
@@ -321,7 +310,7 @@ class SatEngine(object):
                     print 'this is impossible'
                     exit()
                 str1 = '\t\tvar %d gvar %d value 1 level %d'\
-                    % (i + 1, self.local_vars.global_var[i] + 1, self.cur_lvl)
+                    % (i + 1, self.local_vars.global_var[i] + 1, vs.level)
                 logger.debug(str1)
                 self.need_bcp = True
                 self.cur_lvl += 1
@@ -356,7 +345,7 @@ class SatEngine(object):
                 str1 = '\t\tc%d ' % (i + 1)
                 str1 += 'var %d gvar %d '\
                     % (j + 1, self.local_vars.global_var[j] + 1)
-                str1 += 'value %d level %d' % (c[j], self.cur_lvl)
+                str1 += 'value %d level %d' % (c[j], vs.level)
                 logger.debug(str1)
                 conflict, ccindex = \
                     c_array.update_state(j, self.local_vars.vs)
@@ -370,6 +359,8 @@ class SatEngine(object):
     def find_bkt_lvl(self, clause):
         bkt_lvl = 0
         for i, lit in enumerate(clause):
+            if i >= self.local_vars.nv:
+                break
             vs = self.local_vars.vs[i]
             # find the max lvl to be bkt lvl
             if lit != 0 and bkt_lvl < vs.level:
@@ -456,9 +447,10 @@ class SatEngine(object):
 
                 vs.reset()
 
-        self.c_array.init_state(self.local_vars.vs)
-
         self.cur_lvl = bkt_lvl + 1
+
+        conflict, ccindex = self.c_array.init_state(self.local_vars.vs)
+        return conflict, ccindex
 
     def run_core(self, cur_bi, next_lvl):
         """ return next_bin, next_lvl, bkt_lvl """
@@ -505,6 +497,8 @@ class BinManager(object):
         self.vmax = 0
 
         self.lvl_state = []
+
+        self.cnt_across_bkt = 0
         # the s_bkt is monotone increasing, this guarantees the solver's
         # complete
         self.s_bkt = 0
@@ -566,16 +560,16 @@ class BinManager(object):
         sat_engine.c_array.n_lc = self.n_lc_bin[bin_i]
         sat_engine.local_vars.global_var = self.vars_bins[bin_i]
 
-        # load var states, use copy.copy
+        # load var states
         sat_engine.local_vars.nv = len(self.vars_bins[bin_i])
-        local_vs = sat_engine.local_vars.vs
+        local_vs = []
         for i in xrange(self.vmax):
             if i < sat_engine.local_vars.nv:
                 v = self.vars_bins[bin_i][i]
-                local_vs[i] = copy.copy(self.global_vs[v])
+                local_vs += [self.global_vs[v]]
                 assert(local_vs[i].value != 3)
-            else:
-                local_vs[i].reset()
+
+        sat_engine.local_vars.vs = local_vs
         sat_engine.local_vars.reset_reason()
 
         # 找到min_lvl
@@ -594,10 +588,11 @@ class BinManager(object):
                 sat_engine.lvl_state += [self.lvl_state[index]]
 
         global gen_debug_info
-        logger.debug(gen_debug_info.bin_clauses(
-            self.clauses_bins[bin_i],
-            self.vars_bins[bin_i],
-            local_vs))
+        if logger.level <= logging.DEBUG:
+            logger.debug(gen_debug_info.bin_clauses(
+                self.clauses_bins[bin_i],
+                self.vars_bins[bin_i],
+                local_vs))
 
     # update sat engine's result to clauses bins
     def update_bin(self, bin_i, conflict, sat_engine):
@@ -606,18 +601,19 @@ class BinManager(object):
         self.n_oc_bin[bin_i] = sat_engine.c_array.n_oc
         self.n_lc_bin[bin_i] = sat_engine.c_array.n_lc
 
-        # update var states, use copy.copy
-        # 只有当没有冲突时才更新，发生冲突的bin是unsat的
-        if conflict is False:
-            for i in xrange(sat_engine.local_vars.nv):
-                v = self.vars_bins[bin_i][i]
-                self.global_vs[v] = copy.copy(sat_engine.local_vars.vs[i])
+        # update var states，因为是引用的形式，所以不用更新
+        # 只有当没有冲突时才更新，发生冲突的bin是unsat的，不需要
+        # if conflict is False:
+        #     for i in xrange(sat_engine.local_vars.nv):
+        #         v = self.vars_bins[bin_i][i]
+        #         self.global_vs[v] = sat_engine.local_vars.vs[i]
 
         global gen_debug_info
-        logger.debug(gen_debug_info.bin_clauses(
-            self.clauses_bins[bin_i],
-            self.vars_bins[bin_i],
-            sat_engine.local_vars.vs))
+        if logger.level <= logging.DEBUG:
+            logger.debug(gen_debug_info.bin_clauses(
+                self.clauses_bins[bin_i],
+                self.vars_bins[bin_i],
+                sat_engine.local_vars.vs))
 
     def find_global_bkt_lvl(self, bkt_lvl):
         ls = self.lvl_state[bkt_lvl - 1]
@@ -647,6 +643,7 @@ class BinManager(object):
     def backtrack_across_bin(self, bkt_lvl):
         str1 = 'backtrack across bin: bkt_lvl ==', bkt_lvl
         logger.debug(str1)
+        self.cnt_across_bkt += 1
         # 清除全局变量状态
         for vs in self.global_vs:
             value = vs.value
@@ -678,6 +675,10 @@ class BinManager(object):
         logger.info(stemp)
         logger.debug(vtemp)
         logger.debug(btemp)
+
+        if self.cnt_across_bkt % CNT_ACROSS_BKT == 0:
+            logger.warning('cnt across bkt: %d' % self.cnt_across_bkt)
+            logger.warning(stemp)
 
     def compute_s_bkt(self, lvl, bin_i, next_bi):
         # the s_bkt is monotone increasing, this guarantees the solver's
@@ -810,6 +811,7 @@ class GenDebugInfo(object):
 
 
 def control(filename):
+    starttime = clock()
     global bin_manager
     global sat_engine
     bin_manager = BinManager()
@@ -847,12 +849,42 @@ def control(filename):
 
             bin_i = next_bi
 
+            curtime = clock()
+            if curtime - starttime > TIME_OUT_LIMIT:
+                logger.critical('time out')
+                exit()
+
     logger.debug('\nsatisfiable')
     print '\nsatisfiable'
 
     # test the satisfiability
     bin_manager.test(filename)
     return 'sat'
+
+
+def set_logging_file(level=logging.WARNING):
+    logging.basicConfig(filename=os.path.join(os.getcwd(), 'debug.info.todo'),
+                        format='',
+                        filemode='w')
+    # 定义日志级别为WARNING级别
+    # CRITICAL    50
+    # ERROR       40
+    # WARNING     30
+    # INFO        20
+    # DEBUG       10
+    # NOTSET      0
+    global logger
+    logger = logging.getLogger()
+    logger.setLevel(level)
+
+
+def set_logging_console(level=logging.WARNING):
+    logging.basicConfig(format='')
+    global logger
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    logger.debug('ee')
+    # exit()
 
 
 def main():
@@ -870,23 +902,19 @@ def main():
     args = parser.parse_args()
     filename = args.filename
     # filename = '../partitionCNF/cnfdata/bram_bins_uf20-01.txt'
+    filename = 'testdata/bram_bin_uf20-0232.cnf'
     # filename = '../partitionCNF/cnfdata/bram_bins_uuf50-01.cnf'
-    # filename = '../partitionCNF/cnfdata/bram_bins_uf20-10.txt'
     # filename = 'bram.txt'
 
-    global kk_debug
-    kk_debug = args.debug
-    kk_debug = 1
-    # print kk_debug, args.debug
+    # print args.debug
     # return
 
-    logging.basicConfig(filename=os.path.join(os.getcwd(), 'debug.info.todo'),
-                        format='',
-                        filemode='w')
+    # set_logging_file(logging.DEBUG)
+    set_logging_console(logging.WARNING)
+
     control(filename)
 
 if __name__ == '__main__':
-    from time import clock
     # import profile
     start = clock()
     # profile.run("main()")
