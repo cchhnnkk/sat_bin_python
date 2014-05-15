@@ -499,6 +499,7 @@ class BinManager(object):
         self.lvl_state = []
 
         self.cnt_across_bkt = 0
+        self.touched = 0
         # the s_bkt is monotone increasing, this guarantees the solver's
         # complete
         self.s_bkt = 0
@@ -552,6 +553,8 @@ class BinManager(object):
     # load clause bin data to sat engine
     def load_bin(self, bin_i, next_lvl, sat_engine):
         logger.debug('\n===============================================\n')
+        self.touched += 1
+        logger.debug('touched  %d' % (self.touched))
         logger.debug('load_bin %d' % (bin_i + 1))
         assert isinstance(sat_engine, SatEngine)
         assert bin_i >= 0
@@ -635,13 +638,13 @@ class BinManager(object):
                 bkt_lvl = 0
 
         # 找到回退的bin
-        logger.debug('find_global_bkt_lvl\n\tbkt_bin %d bkt_lvl %d'
+        logger.debug('--\tfind_global_bkt_lvl\n\t\tbkt_bin %d bkt_lvl %d'
                      % (bkt_bi, bkt_lvl))
         assert(self.lvl_state[bkt_lvl - 1].has_bkt is False)
         return bkt_bi, bkt_lvl
 
     def backtrack_across_bin(self, bkt_lvl):
-        str1 = 'backtrack across bin: bkt_lvl ==', bkt_lvl
+        str1 = '--\tbacktrack across bin: bkt_lvl == %d' % bkt_lvl
         logger.debug(str1)
         self.cnt_across_bkt += 1
         # 清除全局变量状态
@@ -678,6 +681,7 @@ class BinManager(object):
 
         if self.cnt_across_bkt % CNT_ACROSS_BKT == 0:
             logger.warning('cnt across bkt: %d' % self.cnt_across_bkt)
+            logger.warning('  touched: %d' % self.touched)
             logger.warning(stemp)
 
     def compute_s_bkt(self, lvl, bin_i, next_bi):
