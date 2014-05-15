@@ -7,9 +7,11 @@
 import argparse
 import logging
 import os
+import numpy as np
+# from ctypes import cdll, c_int
 from time import clock
 
-#全局变量便于调试
+# 全局变量便于调试
 bin_manager = None
 sat_engine = None
 logger = None
@@ -69,16 +71,17 @@ class ClauseArray(object):
     def __init__(self, cmax):
         self.cmax = cmax
         self.clauses = None
-        self.n_oc = 0
-        self.n_lc = 0
+        self.n_oc = 0   # 问题子句的个数
+        self.n_lc = 0   # 学习子句的个数
+        self.nc = 0     # 子句总个数
 
         # clauses state #
-        self.csat = [False] * cmax
-        self.cfreelit = [0] * cmax
-        self.c_max_lvl_i = [0] * cmax  # the max lvl of each clauses
-                                       # use to find the implied lvl in bcp
-        self.c_isreason = [False] * cmax
-        self.c_len = [0] * cmax
+        self.csat = np.array([False] * cmax)
+        self.cfreelit = np.array([0] * cmax)
+        # the max lvl of each clauses use to find the implied lvl in bcp
+        self.c_max_lvl_i = np.array([0] * cmax)
+        self.c_isreason = np.array([False] * cmax)
+        self.c_len = np.array([0] * cmax)
 
     def reset_states(self):
         for i in xrange(len(self.csat)):
@@ -89,11 +92,10 @@ class ClauseArray(object):
             self.c_len[i] = 0
 
     def init_state(self, vs):
-
         """return conflict, ccindex"""
 
         self.reset_states()
-        for i in xrange(len(self.clauses)):
+        for i in xrange(self.nc):
             c = self.clauses[i]
             c_max_lvl = 0
             for j, v in enumerate(c):
@@ -119,7 +121,7 @@ class ClauseArray(object):
         """"
         return conflict, ccindex
         """
-        for i in xrange(len(self.clauses)):
+        for i in xrange(self.nc):
             lit = self.clauses[i][vindex]
             if lit != 0:
                 if lit == vs[vindex].value:
@@ -127,7 +129,7 @@ class ClauseArray(object):
 
                 if vs[vindex].value != 0:
                     self.cfreelit[i] -= 1
-                    if self.cfreelit[i] == 0 and self.csat[i] is False:
+                    if self.cfreelit[i] == 0 and not self.csat[i]:
                         # find conflict
                         return True, i
 
@@ -144,14 +146,14 @@ class ClauseArray(object):
             max_len = 0
             for i in xrange(self.n_lc):
                 cindex = self.n_oc + i
-                if self.c_isreason[i] is False \
+                if not self.c_isreason[i] \
                         and max_len < self.c_len[cindex]:
                     max_len = self.c_len[cindex]
                     inserti = cindex
         else:
-            inserti = self.n_oc + self.n_lc
-            self.clauses += [[]]
+            inserti = self.nc
             self.n_lc += 1
+            self.nc += 1
         return inserti
 
     def insert_learntc(self, learntc):
@@ -170,7 +172,7 @@ class ClauseArray(object):
     def find_unitc(self, vs):
         unitc_i = []
         for i, c in enumerate(self.clauses):
-            if self.csat[i] is False and self.cfreelit[i] == 1:
+            if not self.csat[i] and self.cfreelit[i] == 1:
                 c = self.clauses[i]
                 for j, v in enumerate(c):
                     if v != 0 and vs[j].value == 0:
@@ -241,7 +243,7 @@ class SatEngine(object):
         conflict, ccindex = self.c_array.init_state(self.local_vars.vs)
         while 1:
             clauses = self.c_array.clauses
-            if conflict is True:
+            if conflict:
                 # find conflict
                 bkt_bin, bkt_lvl = self.find_bkt_lvl(clauses[ccindex])
 
@@ -283,12 +285,12 @@ class SatEngine(object):
 
         # 如果所有的子句均已满足，则该bin为partial sat
         allsat = True
-        for i in xrange(len(self.c_array.clauses)):
-            if self.c_array.csat[i] is False:
+        for i in xrange(self.c_array.nc):
+            if not self.c_array.csat[i]:
                 allsat = False
                 break
 
-        if allsat is True:
+        if allsat:
             logger.debug('----\t\tpartial sat')
             return True
 
@@ -306,7 +308,7 @@ class SatEngine(object):
                 ls.dcd_bin = cur_bi
                 ls.has_bkt = False
 
-                if self.c_array.update_state(i, self.local_vars.vs) is False:
+                if not self.c_array.update_state(i, self.local_vars.vs):
                     print 'this is impossible'
                     exit()
                 str1 = '\t\tvar %d gvar %d value 1 level %d'\
@@ -351,7 +353,7 @@ class SatEngine(object):
                     c_array.update_state(j, self.local_vars.vs)
 
                 self.need_bcp = True
-                if conflict is True:
+                if conflict:
                     # find conflict
                     return True, ccindex, j
         return False, 0, 0
@@ -374,17 +376,17 @@ class SatEngine(object):
         bkt_bi = ls.dcd_bin
         bkted = ls.has_bkt
 
-        if bkted is True:
+        if bkted:
             # 沿着lvl states向前查找bkted为False的层级
             findflag = False
             for l in range(bkt_lvl, self.min_lvl - 1, -1):
                 ls = self.lvl_state[l - self.min_lvl]
-                if ls.has_bkt is False:
+                if not ls.has_bkt:
                     bkt_lvl = l
                     bkt_bi = ls.dcd_bin
                     findflag = True
                     break
-            if findflag is False:
+            if not findflag:
                 bkt_bi = 0
                 bkt_lvl = self.min_lvl - 1
 
@@ -432,7 +434,7 @@ class SatEngine(object):
             if value == 0:
                 continue
 
-            if vs.level == bkt_lvl and vs.implied is False:
+            if vs.level == bkt_lvl and not vs.implied:
                 if value == 1:
                     value = 2
                 else:
@@ -464,7 +466,7 @@ class SatEngine(object):
 
         while 1:
             conflict, ccindex, cvindex = self.bcp()
-            if conflict is False:
+            if not conflict:
                 # no conflict
                 allsat = self.decision(cur_bi)
                 if allsat:
@@ -486,7 +488,7 @@ class BinManager(object):
 
     def __init__(self):
         self.global_vs = []
-        self.clauses_bins = []
+        self.clauses_bins = []    # 每个bin是一个二维的numpy array
         self.n_oc_bin = []        # the Num of the origin clauses in the bins
         self.n_lc_bin = []        # the Num of the learnt clauses in the bins
         self.vars_bins = []
@@ -523,7 +525,8 @@ class BinManager(object):
 
             elif liststrip[0] == 'bin':
                 cntc_bin = 0
-                cbin = []
+                # 乘2是因为每个bin中的learntc的数量为cmax个
+                cbin = np.array([[0] * self.vmax] * 2 * self.cmax)
 
             elif liststrip[0] == 'variables':
                 i += 1
@@ -535,7 +538,7 @@ class BinManager(object):
 
             else:
                 c = [int(l) for l in liststrip]
-                cbin += [c]
+                cbin[cntc_bin] = c
                 cntc_bin += 1
                 if cntc_bin == nc_bin:
                     self.clauses_bins += [cbin]
@@ -558,6 +561,7 @@ class BinManager(object):
         sat_engine.c_array.clauses = self.clauses_bins[bin_i]
         sat_engine.c_array.n_oc = self.n_oc_bin[bin_i]
         sat_engine.c_array.n_lc = self.n_lc_bin[bin_i]
+        sat_engine.c_array.nc = self.n_oc_bin[bin_i] + self.n_lc_bin[bin_i]
         sat_engine.local_vars.global_var = self.vars_bins[bin_i]
 
         # load var states
@@ -591,6 +595,7 @@ class BinManager(object):
         if logger.level <= logging.DEBUG:
             logger.debug(gen_debug_info.bin_clauses(
                 self.clauses_bins[bin_i],
+                sat_engine.c_array.nc,
                 self.vars_bins[bin_i],
                 local_vs))
 
@@ -603,7 +608,7 @@ class BinManager(object):
 
         # update var states，因为是引用的形式，所以不用更新
         # 只有当没有冲突时才更新，发生冲突的bin是unsat的，不需要
-        # if conflict is False:
+        # if conflict == False:
         #     for i in xrange(sat_engine.local_vars.nv):
         #         v = self.vars_bins[bin_i][i]
         #         self.global_vs[v] = sat_engine.local_vars.vs[i]
@@ -612,6 +617,7 @@ class BinManager(object):
         if logger.level <= logging.DEBUG:
             logger.debug(gen_debug_info.bin_clauses(
                 self.clauses_bins[bin_i],
+                sat_engine.c_array.nc,
                 self.vars_bins[bin_i],
                 sat_engine.local_vars.vs))
 
@@ -620,28 +626,28 @@ class BinManager(object):
         bkt_bi = ls.dcd_bin
         bkted = ls.has_bkt
 
-        if bkted is True:
+        if bkted:
             # 沿着lvl states向前查找bkted为False的层级
             findflag = False
             for l in range(bkt_lvl, 0, -1):
                 ls = self.lvl_state[l - 1]
-                if ls.has_bkt is False:
+                if not ls.has_bkt:
                     bkt_lvl = l
                     bkt_bi = ls.dcd_bin
                     findflag = True
                     break
-            if findflag is False:
+            if not findflag:
                 bkt_bi = 0
                 bkt_lvl = 0
 
         # 找到回退的bin
-        logger.debug('find_global_bkt_lvl\n\tbkt_bin %d bkt_lvl %d'
+        logger.debug('--\tfind_global_bkt_lvl\n\t\tbkt_bin %d bkt_lvl %d'
                      % (bkt_bi, bkt_lvl))
-        assert(self.lvl_state[bkt_lvl - 1].has_bkt is False)
+        assert(not self.lvl_state[bkt_lvl - 1].has_bkt)
         return bkt_bi, bkt_lvl
 
     def backtrack_across_bin(self, bkt_lvl):
-        str1 = 'backtrack across bin: bkt_lvl ==', bkt_lvl
+        str1 = '--\tbacktrack across bin: bkt_lvl == %d' % bkt_lvl
         logger.debug(str1)
         self.cnt_across_bkt += 1
         # 清除全局变量状态
@@ -650,7 +656,7 @@ class BinManager(object):
             if value == 0:
                 continue
 
-            if vs.level == bkt_lvl and vs.implied is False:
+            if vs.level == bkt_lvl and not vs.implied:
                 if value == 1:
                     value = 2
                 else:
@@ -704,32 +710,37 @@ class BinManager(object):
         varvalue = [l.value for l in self.global_vs]
         self.init_bins(filename)
         for bi in xrange(self.nb):
-            for c in self.clauses_bins[bi]:
+            for cindex in xrange(self.n_oc_bin[bi]):
+                c = self.clauses_bins[bi][cindex]
                 sat = False
                 # print self.vars_bins[bi]
                 # print c
-                for i in xrange(len(self.vars_bins[bi])):
+                for i in xrange(len(c)):
                     lit = c[i]
                     var = self.vars_bins[bi][i]
                     if lit == varvalue[var]:
                         sat = True
                         break
-                if sat is False:
+                if not sat:
+                    logger.debug('test fail')
                     print 'test fail'
-                    print 'bin', bi
+                    logger.debug('bin %d' % bi)
                     cstr = gen_debug_info.csr_clause_str(c, self.vars_bins[bi])
-                    print 'clause', cstr
-                    print 'vars_bins', [l + 1 for l in self.vars_bins[bi]]
-                    print 'varsvalue', \
-                        [varvalue[l] for l in self.vars_bins[bi]]
-                    print ''
+                    logger.debug('clause %s' % cstr)
+                    logger.debug('vars_bins %s' %
+                                 [l + 1 for l in self.vars_bins[bi]])
+                    logger.debug('varsvalue %s' %
+                                 [varvalue[l] for l in self.vars_bins[bi]])
+                    logger.debug('')
                     return
         logger.debug('test success\n')
         print 'test success\n'
 
 
 class GenDebugInfo(object):
+
     """docstring for GenDebugInfo"""
+
     def __init__(self, bin_manager):
         self.bin_manager = bin_manager
 
@@ -765,10 +776,11 @@ class GenDebugInfo(object):
         str1 += '%sreason  %s\n' % (strtab, reason)
         return str1
 
-    def bin_clauses(self, clauses, variables, vs):
+    def bin_clauses(self, clauses, nc, variables, vs):
         ci = 1
         str1 = ''
-        for c in clauses:
+        for cindex in xrange(nc):
+            c = clauses[cindex]
             strc = '\tc%d  ' % ci
             # print len(c), len(variables)
             for i in xrange(len(variables)):
