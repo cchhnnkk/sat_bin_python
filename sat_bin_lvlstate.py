@@ -1,3 +1,4 @@
+#!python
 # -*- coding: utf-8 -*-
 
 # 版本说明 #
@@ -7,14 +8,15 @@
 import argparse
 import logging
 import os
+import sys
 from time import clock
 
-#全局变量便于调试
+# 全局变量便于调试
 bin_manager = None
 sat_engine = None
 logger = None
 CNT_ACROSS_BKT = 100    # 控制print_bkted_lvl打印输出的间隔
-TIME_OUT_LIMIT = 60     # 执行时间限制，单位s
+TIME_OUT_LIMIT = 10     # 执行时间限制，单位s
 
 
 class VarState(object):
@@ -25,6 +27,13 @@ class VarState(object):
         self.value = 0        # 0:free 1:false 2:true 3:conflict
         self.implied = False  # Whether the variable is implied
         self.level = 0        # The decision level
+
+    def __str__(self):
+        str_info = " VarState {\n"
+        str_info += "\tvalue : %s\n" % str(self.value)
+        str_info += "\timplied : %s\n" % str(self.implied)
+        str_info += "\tlevel : %s}\n" % str(self.level)
+        return str_info
 
     def reset(self):
         self.value = 0
@@ -41,23 +50,27 @@ class VarState(object):
 
 
 class LvlState(object):
-    __slots__ = ['dcd_var', 'dcd_bin', 'has_bkt']
+    __slots__ = ['dcd_bin', 'has_bkt']
 
     def __init__(self):
-        self.dcd_var = 0        # The decided var in decision level
-        self.dcd_bin = 0        # The bin that decided our decided var
+        # todo: dcd_var可以去掉，只需记录dcd_bin记录就可找到dcd_var
+        self.dcd_bin = 0        # The bin that assigned our decided var
         self.has_bkt = False    # True/False
 
+    def __str__(self):
+        str_info = "LvlState {\n"
+        str_info += "\tdcd_bin : %s\n" % str(self.dcd_bin)
+        str_info += "\thas_bkt : %s}\n" % str(self.has_bkt)
+        return str_info
+
     def reset(self):
-        self.dcd_var = 0
         self.dcd_bin = 0
         self.has_bkt = False
 
     def get(self):
-        return self.dcd_var, self.dcd_bin, self.has_bkt
+        return self.dcd_bin, self.has_bkt
 
-    def set(self, dcd_var, dcd_bin, has_bkt):
-        self.dcd_var = dcd_var
+    def set(self, dcd_bin, has_bkt):
         self.dcd_bin = dcd_bin
         self.has_bkt = has_bkt
 
@@ -80,6 +93,19 @@ class ClauseArray(object):
         self.c_isreason = [False] * cmax
         self.c_len = [0] * cmax
 
+    def __str__(self):
+        str_info = "ClauseArray {\n"
+        str_info += "\tcmax : %s\n" % str(self.cmax)
+        str_info += "\tclauses : %s\n" % str(self.clauses)
+        str_info += "\tn_oc : %s\n" % str(self.n_oc)
+        str_info += "\tn_lc : %s\n" % str(self.n_lc)
+        str_info += "\tcsat : %s\n" % str(self.csat)
+        str_info += "\tcfreelit : %s\n" % str(self.cfreelit)
+        str_info += "\tc_max_lvl_i : %s\n" % str(self.c_max_lvl_i)
+        str_info += "\tc_isreason : %s\n" % str(self.c_isreason)
+        str_info += "\tc_len : %s}\n" % str(self.c_len)
+        return str_info
+
     def reset_states(self):
         for i in xrange(len(self.csat)):
             self.csat[i] = False
@@ -89,7 +115,6 @@ class ClauseArray(object):
             self.c_len[i] = 0
 
     def init_state(self, vs):
-
         """return conflict, ccindex"""
 
         self.reset_states()
@@ -116,7 +141,7 @@ class ClauseArray(object):
         return False, 0
 
     def update_state(self, vindex, vs):
-        """"
+        """
         return conflict, ccindex
         """
         for i in xrange(len(self.clauses)):
@@ -226,7 +251,7 @@ class SatEngine(object):
 
         # level state
         self.lvl_state = []     # 在load时进行赋值
-        self.min_lvl = 0
+        self.base_lvl = 0
 
         # bcp info
         self.need_bcp = False
@@ -234,6 +259,24 @@ class SatEngine(object):
         # conflict info
         self.conflict_fifo = []
         self.learntc = [0] * vmax
+
+    def __str__(self):
+        str_info = "SatEngine {\n"
+        str_info += "\tcmax : %s\n" % str(self.cmax)
+        str_info += "\tvmax : %s\n" % str(self.vmax)
+        str_info += "\tcur_lvl : %s\n" % str(self.cur_lvl)
+        str_info += "\tcur_bin : %s\n" % str(self.cur_bin)
+
+        str_info += "\tc_array : %s\n" % str(self.c_array).replace('\t',
+                                                                   '\t\t')
+        str_info += "\tlvl_state :\n"
+        for i, l in enumerate(self.lvl_state):
+            str_info += '\t' + str(i) + '\t' + str(l).replace('\t', '\t\t\t')
+        str_info += "\tbase_lvl : %s\n" % str(self.base_lvl)
+        str_info += "\tneed_bcp : %s\n" % str(self.need_bcp)
+        str_info += "\tconflict_fifo : %s\n" % str(self.conflict_fifo)
+        str_info += "\tlearntc : %s}\n" % str(self.learntc)
+        return str_info
 
     def preprocess(self, cur_bi):
         logger.debug('--\tpreprocess')
@@ -278,6 +321,13 @@ class SatEngine(object):
                     # 将文字添加到学习子句
                     self.learntc[i] = lit
 
+            if vs.level == cur_lvl and vs.implied == 1\
+                    and self.local_vars.reason[i] == 0:
+                # 在load以后，一些变量的原因子句在其他bin中
+                # 此时直接bcp()可能会进入这个分支
+                # print self
+                pass
+
     def decision(self, cur_bi):
         logger.debug('--\tdecision')
 
@@ -299,16 +349,15 @@ class SatEngine(object):
                 vs.value = 1
                 vs.implied = False
                 vs.level = self.cur_lvl
-                assert(self.cur_lvl >= self.min_lvl)
-                assert(self.cur_lvl - self.min_lvl <= self.local_vars.nv)
-                ls = self.lvl_state[self.cur_lvl - self.min_lvl]
-                ls.dcd_var = self.local_vars.global_var[i]
+                assert(self.cur_lvl >= self.base_lvl)
+                assert(self.cur_lvl - self.base_lvl <= self.local_vars.nv)
+                ls = self.lvl_state[self.cur_lvl - self.base_lvl]
                 ls.dcd_bin = cur_bi
                 ls.has_bkt = False
 
                 if self.c_array.update_state(i, self.local_vars.vs) is False:
                     print 'this is impossible'
-                    exit()
+                    sys.exit()
                 str1 = '\t\tvar %d gvar %d value 1 level %d'\
                     % (i + 1, self.local_vars.global_var[i] + 1, vs.level)
                 logger.debug(str1)
@@ -317,7 +366,7 @@ class SatEngine(object):
                 return False
 
         print 'error in decision'
-        exit()
+        sys.exit()
         # if kk_debug == 2: print '----\t\tpartial sat'
         # return True
 
@@ -366,19 +415,19 @@ class SatEngine(object):
             if lit != 0 and bkt_lvl < vs.level:
                 bkt_lvl = vs.level
 
-        if bkt_lvl < self.min_lvl:
+        if bkt_lvl < self.base_lvl:
             # 需要bin间回退
             return 0, bkt_lvl
 
-        ls = self.lvl_state[bkt_lvl - self.min_lvl]
+        ls = self.lvl_state[bkt_lvl - self.base_lvl]
         bkt_bi = ls.dcd_bin
         bkted = ls.has_bkt
 
         if bkted is True:
             # 沿着lvl states向前查找bkted为False的层级
             findflag = False
-            for l in range(bkt_lvl, self.min_lvl - 1, -1):
-                ls = self.lvl_state[l - self.min_lvl]
+            for l in range(bkt_lvl, self.base_lvl - 1, -1):
+                ls = self.lvl_state[l - self.base_lvl]
                 if ls.has_bkt is False:
                     bkt_lvl = l
                     bkt_bi = ls.dcd_bin
@@ -386,7 +435,7 @@ class SatEngine(object):
                     break
             if findflag is False:
                 bkt_bi = 0
-                bkt_lvl = self.min_lvl - 1
+                bkt_lvl = self.base_lvl - 1
 
         return bkt_bi, bkt_lvl
 
@@ -438,7 +487,8 @@ class SatEngine(object):
                 else:
                     value = 1
                 vs.set(value, False, vs.level)
-                self.lvl_state[vs.level - self.min_lvl].has_bkt = True
+                # has_bkt的翻转也可以放到find_bkt_lvl中
+                self.lvl_state[vs.level - self.base_lvl].has_bkt = True
             elif vs.level >= bkt_lvl:
                 # clear reason clause
                 reasonc = self.local_vars.reason[i] - 1
@@ -576,17 +626,17 @@ class BinManager(object):
         sat_engine.local_vars.reset_reason()
 
         # 找到min_lvl
-        sat_engine.min_lvl = 1
+        sat_engine.base_lvl = 1
         for l in xrange(next_lvl - 1, 0, -1):
             ls = self.lvl_state[l - 1]
-            sat_engine.min_lvl = l
+            sat_engine.base_lvl = l
             if ls.dcd_bin != bin_i + 1:
                 break
 
-        # load lvl states，给local lvl states多分配点儿空间
+        # load lvl states
         sat_engine.lvl_state = []
         for i in xrange(sat_engine.local_vars.nv):
-            index = sat_engine.min_lvl - 1 + i
+            index = sat_engine.base_lvl - 1 + i
             if index < len(self.lvl_state):
                 sat_engine.lvl_state += [self.lvl_state[index]]
 
@@ -667,16 +717,13 @@ class BinManager(object):
     def print_bkted_lvl(self, lvl):
         ltemp = '  level '
         stemp = '  bkted '
-        vtemp = '  d_var '
         btemp = '  d_bin '
         for i in xrange(lvl):
             ltemp += '%3d' % (i + 1)
             stemp += '%3d' % int(self.lvl_state[i].has_bkt)
-            vtemp += '%3d' % (self.lvl_state[i].dcd_var + 1)
             btemp += '%3d' % int(self.lvl_state[i].dcd_bin)
         logger.debug(ltemp)
         logger.info(stemp)
-        logger.debug(vtemp)
         logger.debug(btemp)
 
         if self.cnt_across_bkt % CNT_ACROSS_BKT == 0:
@@ -733,7 +780,9 @@ class BinManager(object):
 
 
 class GenDebugInfo(object):
+
     """docstring for GenDebugInfo"""
+
     def __init__(self, bin_manager):
         self.bin_manager = bin_manager
 
@@ -856,7 +905,7 @@ def control(filename):
             curtime = clock()
             if curtime - starttime > TIME_OUT_LIMIT:
                 logger.critical('time out')
-                exit()
+                sys.exit()
 
     logger.debug('\nsatisfiable')
     print '\nsatisfiable'
@@ -887,8 +936,8 @@ def set_logging_console(level=logging.WARNING):
     global logger
     logger = logging.getLogger()
     logger.setLevel(level)
-    logger.debug('ee')
-    # exit()
+    # logger.debug('ee')
+    # sys.exit()
 
 
 def main():
@@ -906,15 +955,15 @@ def main():
     args = parser.parse_args()
     filename = args.filename
     # filename = '../partitionCNF/cnfdata/bram_bins_uf20-01.txt'
-    filename = 'testdata/bram_bin_uf20-0232.cnf'
+    # filename = 'testdata/bram_bin_uf20-0232.cnf'
     # filename = '../partitionCNF/cnfdata/bram_bins_uuf50-01.cnf'
     # filename = 'bram.txt'
 
     # print args.debug
     # return
 
-    # set_logging_file(logging.DEBUG)
-    set_logging_console(logging.WARNING)
+    set_logging_file(logging.DEBUG)
+    # set_logging_console(logging.WARNING)
 
     control(filename)
 
