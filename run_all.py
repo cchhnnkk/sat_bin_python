@@ -50,5 +50,5 @@ def test_uf50():
 
 
 if __name__ == '__main__':
-    # test_uf20_91_100(10)
-    test_uf50()
+    test_uf20_91_100(10)
+    # test_uf50()

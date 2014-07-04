@@ -18,6 +18,9 @@ logger = None
 CNT_ACROSS_BKT = 100    # 控制print_bkted_lvl打印输出的间隔
 TIME_OUT_LIMIT = 10     # 执行时间限制，单位s
 
+# 全局变量，在control中进行实例化
+gen_debug_info = None
+
 
 class VarState(object):
     __slots__ = ['value', 'implied', 'level']
@@ -53,7 +56,7 @@ class LvlState(object):
     __slots__ = ['dcd_bin', 'has_bkt']
 
     def __init__(self):
-        # todo: dcd_var可以去掉，只需记录dcd_bin记录就可找到dcd_var
+        # 去掉了dcd_var，只需记录dcd_bin记录就可找到dcd_var
         self.dcd_bin = 0        # The bin that assigned our decided var
         self.has_bkt = False    # True/False
 
@@ -224,9 +227,6 @@ class LocalVars(object):
     def reset_conflict_tag(self):
         for i in xrange(self.nv):
             self.conflict_tag[i] = 0
-
-# 全局变量，在control中进行实例化
-gen_debug_info = None
 
 
 class SatEngine(object):
@@ -559,7 +559,9 @@ class BinManager(object):
         i = 0
         while i < len(lists):
             liststrip = lists[i].strip().split()
-            if liststrip[0] == 'total':
+            if liststrip == []:
+                pass
+            elif liststrip[0] == 'total':
                 if liststrip[3] == 'bins':
                     self.nb = int(liststrip[-1])
                 elif liststrip[3] == 'variables':
@@ -646,6 +648,7 @@ class BinManager(object):
                 self.clauses_bins[bin_i],
                 self.vars_bins[bin_i],
                 local_vs))
+            logger.debug(gen_debug_info.bin_clauses_sv(sat_engine))
 
     # update sat engine's result to clauses bins
     def update_bin(self, bin_i, conflict, sat_engine):
@@ -700,6 +703,8 @@ class BinManager(object):
         # 清除全局变量状态
         for vs in self.global_vs:
             value = vs.value
+            gen_debug_info.bktcnt_info += 1
+
             if value == 0:
                 continue
 
@@ -710,9 +715,11 @@ class BinManager(object):
                     value = 1
                 vs.set(value, False, vs.level)
                 self.lvl_state[vs.level - 1].has_bkt = True
+                gen_debug_info.real_bktcnt_info += 1
 
             elif vs.level >= bkt_lvl:
                 vs.set(0, False, 0)
+                gen_debug_info.real_bktcnt_info += 1
 
     def print_bkted_lvl(self, lvl):
         ltemp = '  level '
@@ -786,6 +793,10 @@ class GenDebugInfo(object):
     def __init__(self, bin_manager):
         self.bin_manager = bin_manager
 
+        # 记录回退的次数，info
+        self.bktcnt_info = 0
+        self.real_bktcnt_info = 0
+
     def one_clause(self, c, local_vars, strtab):
         vs = local_vars.vs
         cc = []
@@ -840,6 +851,57 @@ class GenDebugInfo(object):
         str1 += '\tlevel       %s\n' % [l.level for l in vs]
         return str1
 
+    def bin_clauses_sv(self, sat_engine):
+        clauses = sat_engine.c_array.clauses
+        vs = sat_engine.local_vars.vs
+        ls = sat_engine.lvl_state
+        cmax = sat_engine.cmax
+        vmax = sat_engine.vmax
+        ci = 1
+        str1 = ''
+        str_bin = "\tint bin[%d][%d] = '{\n" % (cmax, vmax)
+        for ci in xrange(cmax):
+            if ci < len(clauses):
+                c = clauses[ci]
+            else:
+                c = [0] * vmax
+            strc = "\t\t'{"
+            # print len(c), len(variables)
+            for vi in xrange(vmax):
+                if vi < len(c):
+                    var = c[vi]
+                else:
+                    var = 0
+                strc += str(var)
+                if vi != vmax - 1:
+                    strc += ', '
+            if ci != cmax - 1:
+                str_bin += strc + '},\n'
+            else:
+                str_bin += strc + '}\n'
+
+        str_bin += '\t};\n'
+
+        str1 = str_bin
+
+        str1 += '\t//var state list:\n'
+        str1 += '\tint value[]   = %s\n' % [l.value for l in vs]
+        str1 += '\tint implied[] = %s\n' % [int(l.implied) for l in vs]
+        str1 += '\tint level[]   = %s\n' % [l.level for l in vs]
+
+        str1 += '\t//lvl state list:\n'
+        str1 += '\tint dcd_bin[] = %s\n' % [l.dcd_bin for l in ls]
+        str1 += '\tint has_bkt[] = %s\n' % [int(l.has_bkt) for l in ls]
+
+        str1 += '\t//ctrl\n'
+        str1 += '\tcur_bin_num_i = %d;\n' % sat_engine.cur_bin
+        str1 += '\tload_lvl_i = %d;\n' % sat_engine.cur_lvl
+        str1 += '\tbase_lvl_i = %d;\n' % sat_engine.base_lvl
+
+        str1 = str1.replace('= [', "= '{")
+        str1 = str1.replace(']\n', '};\n')
+        return str1
+
     def convert_csr_clause(self, c):
         l = []
         for i in xrange(len(c)):
@@ -860,6 +922,14 @@ class GenDebugInfo(object):
                     strc += str(-var) + ' '
                 elif c[i] == 2:
                     strc += str(var) + ' '
+        return strc
+
+    def gen_bkt_info(self):
+        strc = '\nbkt counter: ' + str(self.bktcnt_info)
+        strc += '\nreal bkt counter: ' + str(self.real_bktcnt_info)
+        if self.real_bktcnt_info != 0:
+            strc += '\nreal bkt rate: ' + \
+                str(self.real_bktcnt_info * 1.0 / self.bktcnt_info)
         return strc
 
 
@@ -910,6 +980,7 @@ def control(filename):
     logger.debug('\nsatisfiable')
     print '\nsatisfiable'
 
+    logger.critical(gen_debug_info.gen_bkt_info())
     # test the satisfiability
     bin_manager.test(filename)
     return 'sat'
@@ -955,6 +1026,7 @@ def main():
     args = parser.parse_args()
     filename = args.filename
     # filename = '../partitionCNF/cnfdata/bram_bins_uf20-01.txt'
+    # filename = 'testdata/bram_bin_uf20-0232.cnf'
     # filename = 'testdata/bram_bin_uf20-0232.cnf'
     # filename = '../partitionCNF/cnfdata/bram_bins_uuf50-01.cnf'
     # filename = 'bram.txt'
