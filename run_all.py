@@ -49,6 +49,13 @@ def test_uf50():
     run_all(filename)
 
 
+def test_file(filename, vmax_i, cmax_i):
+    global vmax, cmax
+    vmax = vmax_i
+    cmax = cmax_i
+    sat.set_logging_file(logging.DEBUG)
+    run_all(filename)
+
 if __name__ == '__main__':
     test_uf20_91_100(10)
     # test_uf50()

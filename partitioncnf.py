@@ -19,6 +19,9 @@ shareC_len = []
 shareV_len = []
 varlist = []
 
+cmax = 4
+vmax = 8
+
 
 def get_share_len1(a, b):
     return len(set(a) & set(b))
@@ -293,9 +296,6 @@ def write_result(filename, resultfilename, cbin, vbin, nc, nv, cmax, vmax):
             fp_bin.write('\n')
         fp_bin.write('\n')
 
-cmax = 4
-vmax = 8
-
 
 def run(filename, resultfilename):
     times = 10
@@ -347,10 +347,10 @@ def main():
     filename = arguments.i
 
     resultfilename = arguments.o
-    path = "E:\\sat\\reference\\benchmarks\\satlib-benchmark\\uf20-91\\"
-    filename = "uf20-0%d.cnf" % 232
-    resultfilename = 'bram_' + filename
-    filename = path + filename
+    # path = "E:\\sat\\reference\\benchmarks\\satlib-benchmark\\uf20-91\\"
+    # filename = "uf20-0%d.cnf" % 232
+    # resultfilename = 'bram_' + filename
+    # filename = path + filename
     run(filename, resultfilename)
 
 if __name__ == '__main__':

@@ -303,7 +303,7 @@ class SatEngine(object):
                 self.cur_lvl = bkt_lvl + 1
                 return bkt_bin, bkt_lvl
 
-            return 0, 0
+            return -1, -1
 
     def push_cclause_fifo(self, cindex, cur_lvl):
         c = self.c_array.clauses[cindex]
@@ -382,10 +382,21 @@ class SatEngine(object):
                 # unit clause
                 c = self.c_array.clauses[i]
                 vs = self.local_vars.vs[j]
-                # the free lit
-                vs.value = c[j]
+
                 mindex = c_array.c_max_lvl_i[i]
                 mvs = self.local_vars.vs[mindex]
+
+                # 当出现一个文字出现多个推理时可以有几种不同的实现方式
+                # 选择第一个推理的
+                if vs.value != 0:
+                    continue
+
+                # 选择最小层级推理的
+                # if vs.value != 0 and self.local_vars.vs[mindex] > vs.level:
+                #     continue
+
+                # the free lit
+                vs.value = c[j]
                 vs.level = mvs.level
                 vs.implied = True
                 self.local_vars.reason[j] = i + 1
@@ -509,7 +520,7 @@ class SatEngine(object):
         logger.debug('sat engine run_core: cur_bin == %d' % cur_bi)
         bkt_bin, bkt_lvl = self.preprocess(cur_bi)
 
-        if bkt_bin != 0 or bkt_lvl != 0:
+        if not (bkt_bin == -1 and bkt_lvl == -1):
             return bkt_bin, self.cur_lvl, bkt_lvl
 
         while 1:
@@ -648,6 +659,8 @@ class BinManager(object):
                 self.clauses_bins[bin_i],
                 self.vars_bins[bin_i],
                 local_vs))
+
+        if logger.level <= logging.NOTSET:
             logger.debug(gen_debug_info.bin_clauses_sv(sat_engine))
 
     # update sat engine's result to clauses bins
@@ -852,6 +865,7 @@ class GenDebugInfo(object):
         return str1
 
     def bin_clauses_sv(self, sat_engine):
+        # return
         clauses = sat_engine.c_array.clauses
         vs = sat_engine.local_vars.vs
         ls = sat_engine.lvl_state
@@ -990,16 +1004,10 @@ def set_logging_file(level=logging.WARNING):
     logging.basicConfig(filename=os.path.join(os.getcwd(), 'debug.info.todo'),
                         format='',
                         filemode='w')
-    # 定义日志级别为WARNING级别
-    # CRITICAL    50
-    # ERROR       40
-    # WARNING     30
-    # INFO        20
-    # DEBUG       10
-    # NOTSET      0
     global logger
     logger = logging.getLogger()
     logger.setLevel(level)
+    print "view debug.info.todo for more"
 
 
 def set_logging_console(level=logging.WARNING):
@@ -1010,32 +1018,59 @@ def set_logging_console(level=logging.WARNING):
     # logger.debug('ee')
     # sys.exit()
 
+# 定义日志级别为WARNING级别
+# CRITICAL    50
+# ERROR       40
+# WARNING     30
+# INFO        20
+# DEBUG       10
+# NOTSET      0
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--filename',
                         type=str,
                         help='input filename',
-                        default='testdata/bram_bins_unsat7.txt'
+                        default='testdata/bram_bins_sat7.txt'
                         )
-    parser.add_argument('--debug',
+    parser.add_argument('--logfile',
                         type=int,
-                        help='True or False',
-                        default=False
+                        help='1:输出到file；0:输出到console',
+                        default=1
+                        )
+    parser.add_argument('--loglevel',
+                        type=int,
+                        help="""0-50
+                                # CRITICAL = 50
+                                # ERROR    = 40
+                                # WARNING  = 30
+                                # INFO     = 20
+                                # DEBUG    = 10
+                                # NOTSET   = 0""",
+                        default=logging.WARNING
                         )
     args = parser.parse_args()
     filename = args.filename
-    # filename = '../partitionCNF/cnfdata/bram_bins_uf20-01.txt'
     # filename = 'testdata/bram_bin_uf20-0232.cnf'
     # filename = 'testdata/bram_bin_uf20-0232.cnf'
-    # filename = '../partitionCNF/cnfdata/bram_bins_uuf50-01.cnf'
     # filename = 'bram.txt'
 
     # print args.debug
     # return
 
-    set_logging_file(logging.DEBUG)
-    # set_logging_console(logging.WARNING)
+    loglevel = args.loglevel
+    logfile = args.logfile
+
+    # loglevel = logging.CRITICAL
+    # loglevel = logging.WARNING
+    # loglevel = logging.DEBUG
+    # loglevel = logging.NOTSET
+    # logfile = True
+    if logfile:
+        set_logging_file(loglevel)
+    else:
+        set_logging_console(loglevel)
 
     control(filename)
 
