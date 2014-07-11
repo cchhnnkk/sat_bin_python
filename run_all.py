@@ -8,6 +8,9 @@ import logging
 
 vmax = 64
 cmax = 64
+# loglevel = logging.WARNING
+loglevel = logging.DEBUG
+log2file = True
 
 
 def run_all(filename):
@@ -20,7 +23,9 @@ def run_all(filename):
     bramfile = 'bram.txt'
     cvt_bram.convert_csr_to_bram_data(binfile, bramfile)
     print '\tsolve the sat'
-    sat.control(bramfile)
+    sat.loglevel = loglevel
+    sat.log2file = log2file
+    sat.run(bramfile)
 
 
 def test_uf20_91_100(n_test):
@@ -33,8 +38,6 @@ def test_uf20_91_100(n_test):
     else:
         start = 0
 
-    sat.set_logging_console(logging.WARNING)
-
     for i in xrange(start, n_test, 1):
         filename = "uf20-0%d.cnf" % (i + 1)
         run_all(path + filename)
@@ -43,7 +46,6 @@ def test_uf20_91_100(n_test):
 def test_uf50():
     filename = 'testdata/uf50-01.cnf'
 
-    sat.set_logging_console(logging.WARNING)
     sat.CNT_ACROSS_BKT = 500
     sat.TIME_OUT_LIMIT = 10     # 60s
     run_all(filename)

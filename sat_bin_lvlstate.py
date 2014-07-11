@@ -1026,6 +1026,18 @@ def set_logging_console(level=logging.WARNING):
 # DEBUG       10
 # NOTSET      0
 
+loglevel = logging.WARNING
+log2file = False
+
+
+def run(filename):
+    if log2file:
+        set_logging_file(loglevel)
+    else:
+        set_logging_console(loglevel)
+
+    control(filename)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -1034,7 +1046,7 @@ def main():
                         help='input filename',
                         default='testdata/bram_bins_sat7.txt'
                         )
-    parser.add_argument('--logfile',
+    parser.add_argument('--log2file',
                         type=int,
                         help='1:输出到file；0:输出到console',
                         default=1
@@ -1059,20 +1071,17 @@ def main():
     # print args.debug
     # return
 
+    global loglevel, log2file
     loglevel = args.loglevel
-    logfile = args.logfile
+    log2file = args.log2file
 
     # loglevel = logging.CRITICAL
     # loglevel = logging.WARNING
     # loglevel = logging.DEBUG
     # loglevel = logging.NOTSET
     # logfile = True
-    if logfile:
-        set_logging_file(loglevel)
-    else:
-        set_logging_console(loglevel)
+    run(filename)
 
-    control(filename)
 
 if __name__ == '__main__':
     # import profile
