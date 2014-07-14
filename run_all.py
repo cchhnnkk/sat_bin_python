@@ -8,9 +8,11 @@ import logging
 
 vmax = 64
 cmax = 64
-# loglevel = logging.WARNING
-loglevel = logging.DEBUG
-log2file = True
+loglevel = logging.WARNING
+# loglevel = logging.DEBUG
+# loglevel = logging.INFO
+log2file = False
+# log2file = True
 
 
 def run_all(filename):
@@ -47,7 +49,8 @@ def test_uf50():
     filename = 'testdata/uf50-01.cnf'
 
     sat.CNT_ACROSS_BKT = 500
-    sat.TIME_OUT_LIMIT = 10     # 60s
+    # sat.TIME_OUT_LIMIT = 10     # 10s
+    sat.TIME_OUT_LIMIT = 60
     run_all(filename)
 
 
@@ -59,5 +62,8 @@ def test_file(filename, vmax_i, cmax_i):
     run_all(filename)
 
 if __name__ == '__main__':
-    test_uf20_91_100(10)
-    # test_uf50()
+    # test_uf20_91_100(10)
+    test_uf50()
+    # test_file("testdata/aloul-chnl11-13.cnf", 1000, 1000)
+#     test_file("F:/sat/reference/benchmarks/satlib-benchmark/\
+# uuf50-218/UUF50.218.1000/uuf50-09.cnf", 100, 300)

@@ -119,7 +119,7 @@ def compute_cost(clauses, nc, nv, cbin, vbin):
             if i > v_maxbin[v]:
                 v_maxbin[v] = i
     v_span = v_maxbin - v_minbin
-    cost3 = sum(v_span)
+    cost3 = sum([abs(l) for l in v_span])
     cost = cost1 + cost2 + cost3
     if kk_debug:
         print cost1, cost2, cost3, cost
@@ -223,7 +223,7 @@ def min_bandwidth(clauses, c_adjacent, v_adjacent, nc, nv, times, cmax, vmax):
         c_gravity = np.array(nc * [0])
         compute_clauses_gravity(clauses, c_adjacent, nc, c_rank, c_gravity)
         # Rearrange Clauses in increasing order of gravity
-        c_rank = c_rank[c_gravity.argsort()]
+        c_rank = c_gravity.argsort()
 
         # Compute Gravity of all variables
         v_gravity = np.array(nv * [0])
