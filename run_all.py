@@ -3,16 +3,18 @@
 import sys
 import partitioncnf as pcnf
 import convert_csr_to_bram_data as cvt_bram
-import sat_bin_lvlstate as sat
+# import sat_bin_lvlstate as sat
+import sat_bin_reason as sat
 import logging
 
-vmax = 64
-cmax = 64
-loglevel = logging.WARNING
+vmax = 8
+cmax = 8
+loglevel = logging.CRITICAL
+# loglevel = logging.WARNING
 # loglevel = logging.DEBUG
 # loglevel = logging.INFO
-log2file = False
-# log2file = True
+# log2file = False
+log2file = True
 
 
 def run_all(filename):
@@ -34,7 +36,7 @@ def test_uf20_91_100(n_test):
     if n_test > 100:
         n_test = 100
 
-    path = "testdata\\uf20-91\\"
+    path = "testdata/uf20-91/"
     if len(sys.argv) == 2:
         start = int(sys.argv[1])
     else:
@@ -63,7 +65,8 @@ def test_file(filename, vmax_i, cmax_i):
 
 if __name__ == '__main__':
     # test_uf20_91_100(10)
-    test_uf50()
+    # test_uf50()
+    test_file("testdata/uf20-91/uf20-01.cnf", 8, 8)
     # test_file("testdata/aloul-chnl11-13.cnf", 1000, 1000)
 #     test_file("F:/sat/reference/benchmarks/satlib-benchmark/\
 # uuf50-218/UUF50.218.1000/uuf50-09.cnf", 100, 300)
