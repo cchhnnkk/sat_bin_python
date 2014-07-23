@@ -468,7 +468,7 @@ class SatEngine(object):
             inserti = self.c_array.insert_learntc(self.learntc)
 
             logger.info('--\tthe learntc c%d %s'
-                        % (inserti,
+                        % (inserti + 1,
                            gen_debug_info.convert_csr_clause(self.learntc)))
         else:
             # 冲突子句的变量的原因子句都在其他bin中，无法得到的学习子句
@@ -505,6 +505,12 @@ class SatEngine(object):
                 vs.set(value, False, vs.level)
                 # has_bkt的翻转也可以放到find_bkt_lvl中
                 self.lvl_state[vs.level - self.base_lvl].has_bkt = True
+                str1 = '\t\tvar %d gvar %d value %d level %d' % (
+                    i + 1,
+                    self.local_vars.global_var[i] + 1,
+                    vs.value,
+                    vs.level)
+                logger.info(str1)
             elif vs.level >= bkt_lvl:
                 # clear reason clause
                 reasonc = self.local_vars.reason[i] - 1
@@ -622,6 +628,8 @@ class BinManager(object):
         sat_engine.c_array.n_oc = self.n_oc_bin[bin_i]
         sat_engine.c_array.n_lc = self.n_lc_bin[bin_i]
         sat_engine.local_vars.global_var = self.vars_bins[bin_i]
+        sat_engine.cur_bin = bin_i
+        sat_engine.cur_lvl = next_lvl
 
         # load var states
         sat_engine.local_vars.nv = len(self.vars_bins[bin_i])
@@ -710,7 +718,7 @@ class BinManager(object):
         logger.info(str1)
         gen_debug_info.cnt_across_bkt += 1
         # 清除全局变量状态
-        for vs in self.global_vs:
+        for i, vs in enumerate(self.global_vs):
             value = vs.value
             gen_debug_info.cnt_gbkt_visit_vs += 1
 
@@ -725,6 +733,11 @@ class BinManager(object):
                 vs.set(value, False, vs.level)
                 self.lvl_state[vs.level - 1].has_bkt = True
                 gen_debug_info.cnt_gbkt_clear_vs += 1
+                str1 = '\t\tgvar %d value %d level %d' % (
+                    i + 1,
+                    vs.value,
+                    vs.level)
+                logger.info(str1)
 
             elif vs.level >= bkt_lvl:
                 vs.set(0, False, 0)
@@ -926,7 +939,7 @@ class GenDebugInfo(object):
         str1 += '\tint has_bkt[] = %s\n' % [int(l.has_bkt) for l in ls]
 
         str1 += '\t//ctrl\n'
-        str1 += '\tint cur_bin_num = %d;\n' % sat_engine.cur_bin
+        str1 += '\tint cur_bin_num = %d;\n' % (sat_engine.cur_bin + 1)
         str1 += '\tint load_lvl = %d;\n' % sat_engine.cur_lvl
         str1 += '\tint base_lvl = %d;\n' % sat_engine.base_lvl
 
@@ -1040,6 +1053,10 @@ log2file = False
 
 
 def run(filename):
+
+    strl = ["NOTSET", "INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]
+    print "the loglevel is %s" % strl[loglevel / 10]
+
     if log2file:
         set_logging_file(loglevel)
     else:
