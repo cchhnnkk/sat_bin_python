@@ -688,6 +688,9 @@ class BinManager(object):
                 self.vars_bins[bin_i],
                 sat_engine.local_vars.vs))
 
+        if logger.level <= logging.NOTSET:
+            logger.info(gen_debug_info.bin_clauses_sv(sat_engine))
+
     def find_global_bkt_lvl(self, bkt_lvl):
         ls = self.lvl_state[bkt_lvl - 1]
         bkt_bi = ls.dcd_bin

@@ -4,7 +4,7 @@ import sys
 import partitioncnf as pcnf
 import convert_csr_to_bram_data as cvt_bram
 # import sat_bin_lvlstate as sat
-import sat_bin_reason as sat
+import sat_bin as sat
 import logging
 
 vmax = 8

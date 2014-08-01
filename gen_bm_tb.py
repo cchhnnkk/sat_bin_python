@@ -106,6 +106,7 @@ class GenBmTb(object):
         vmax = self.vmax
         ci = 1
         str_info = "int nb = %d;\n" % self.nb
+        str_info = "int nv = %d;\n" % self.nv
         str_info += "int cmax = %d;\n" % self.cmax
         str_info += "int vmax = %d;\n\n" % self.vmax
 

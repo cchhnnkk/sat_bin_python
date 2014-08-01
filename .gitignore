@@ -2,3 +2,5 @@
 ..todo
 *.log
 *.swp
+*.cnf
+*.txt
