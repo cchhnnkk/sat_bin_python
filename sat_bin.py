@@ -644,12 +644,12 @@ class BinManager(object):
         sat_engine.local_vars.reset_reason()
 
         # 找到min_lvl
-        sat_engine.base_lvl = 1
+        sat_engine.base_lvl = next_lvl
         for l in xrange(next_lvl - 1, 0, -1):
             ls = self.lvl_state[l - 1]
-            sat_engine.base_lvl = l
             if ls.dcd_bin != bin_i + 1:
                 break
+            sat_engine.base_lvl = l
 
         # load lvl states
         sat_engine.lvl_state = []
@@ -660,9 +660,8 @@ class BinManager(object):
 
         if logger.level <= logging.INFO:
             logger.info(gen_debug_info.bin_clauses(
-                self.clauses_bins[bin_i],
-                self.vars_bins[bin_i],
-                local_vs))
+                sat_engine,
+                self.vars_bins[bin_i]))
 
         if logger.level <= logging.NOTSET:
             logger.info(gen_debug_info.bin_clauses_sv(sat_engine))
@@ -684,9 +683,8 @@ class BinManager(object):
         global gen_debug_info
         if logger.level <= logging.INFO:
             logger.info(gen_debug_info.bin_clauses(
-                self.clauses_bins[bin_i],
-                self.vars_bins[bin_i],
-                sat_engine.local_vars.vs))
+                sat_engine,
+                self.vars_bins[bin_i]))
 
         if logger.level <= logging.NOTSET:
             logger.info(gen_debug_info.bin_clauses_sv(sat_engine))
@@ -876,7 +874,10 @@ class GenDebugInfo(object):
         str1 += '%sreason  %s\n' % (strtab, reason)
         return str1
 
-    def bin_clauses(self, clauses, variables, vs):
+    def bin_clauses(self, sat_engine, variables):
+        clauses = sat_engine.c_array.clauses
+        vs = sat_engine.local_vars.vs
+        ls = sat_engine.lvl_state
         ci = 1
         str1 = ''
         for c in clauses:
@@ -893,9 +894,17 @@ class GenDebugInfo(object):
             ci += 1
         str1 += '\tglobal vars %s\n' % [l + 1 for l in variables]
         str1 += '\tlocal vars  %s\n' % [l + 1 for l in range(len(variables))]
+        str1 += '\tvar_state_list:\n'
         str1 += '\tvalue       %s\n' % [l.value for l in vs]
         str1 += '\timplied     %s\n' % [int(l.implied) for l in vs]
         str1 += '\tlevel       %s\n' % [l.level for l in vs]
+        str1 += '\tlvl state list:\n'
+        str1 += '\tdcd_bin     %s\n' % [l.dcd_bin for l in ls]
+        str1 += '\thas_bkt     %s\n' % [int(l.has_bkt) for l in ls]
+        str1 += '\tctrl:\n'
+        str1 += '\tcur_bin_num : %d\n' % (sat_engine.cur_bin + 1)
+        str1 += '\tload_lvl    : %d\n' % sat_engine.cur_lvl
+        str1 += '\tbase_lvl    : %d\n' % sat_engine.base_lvl
         return str1
 
     def bin_clauses_sv(self, sat_engine):
