@@ -66,7 +66,7 @@ def test_file(filename, vmax_i, cmax_i):
 if __name__ == '__main__':
     # test_uf20_91_100(10)
     # test_uf50()
-    test_file("testdata/uf20-91/uf20-01.cnf", 8, 8)
+    test_file("testdata/uf20-91/uf20-01.cnf", 8, 4)
     # test_file("testdata/aloul-chnl11-13.cnf", 1000, 1000)
 #     test_file("F:/sat/reference/benchmarks/satlib-benchmark/\
 # uuf50-218/UUF50.218.1000/uuf50-09.cnf", 100, 300)

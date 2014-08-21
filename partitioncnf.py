@@ -340,6 +340,16 @@ def argument_parse():
                         help='ouptput result',
                         default='bram_bins_uf20-01.txt'
                         )
+    parser.add_argument('--vmax',
+                        type=int,
+                        help='vmax',
+                        default=8
+                        )
+    parser.add_argument('--cmax',
+                        type=int,
+                        help='cmax',
+                        default=4
+                        )
     return parser.parse_args()
 
 
@@ -348,6 +358,9 @@ def main():
     filename = arguments.i
 
     resultfilename = arguments.o
+    global vmax, cmax
+    vmax = arguments.vmax
+    cmax = arguments.cmax
     # path = "E:\\sat\\reference\\benchmarks\\satlib-benchmark\\uf20-91\\"
     # filename = "uf20-0%d.cnf" % 232
     # resultfilename = 'bram_' + filename

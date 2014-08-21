@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # 截取sat_bin的代码，用于生成verilog中bin_manager模块的testbench
+import sys
 
 class GenBmTb(object):
 
@@ -105,13 +106,16 @@ class GenBmTb(object):
         cmax = self.cmax
         vmax = self.vmax
         ci = 1
-        str_info = "int nb = %d;\n" % self.nb
-        str_info = "int nv = %d;\n" % self.nv
-        str_info += "int cmax = %d;\n" % self.cmax
-        str_info += "int vmax = %d;\n\n" % self.vmax
+        str_info = "task sb_test_case();\n\n"
+        str_info += "nb = %d;\n" % self.nb
+        str_info += "nv = %d;\n" % self.nv
+        str_info += "cmax = %d;\n" % self.cmax
+        str_info += "vmax = %d;\n\n" % self.vmax
 
-        str_cbin = "int cbin[%d][%d] = '{\n" % (cmax*self.nb, vmax)
-        str_vbin = "int vbin[%d] = '{\n" % (cmax*self.nb)
+        # str_cbin = "cbin[%d][%d] = '{\n" % (cmax*self.nb, vmax)
+        # str_vbin = "vbin[%d] = '{\n" % (cmax*self.nb)
+        str_cbin = "cbin = '{\n"
+        str_vbin = "vbin = '{\n"
         for i in xrange(self.nb):
 
             strc, strv = self.get_one_bin(self.clauses_bins[i], self.vars_bins[i])
@@ -126,10 +130,15 @@ class GenBmTb(object):
 
         str_cbin += '};\n\n'
         str_vbin += '};\n\n'
-        return str_info + str_cbin + str_vbin
+        str_end = "run_sb_load();\n\n"
+        str_end += "endtask\n"
+        return str_info + str_cbin + str_vbin + str_end
 
 
-filename = 'testdata/bram_bins_sat7.txt'
+if(len(sys.argv) > 1):
+    filename = sys.argv[1]
+else:
+    filename = 'bram.txt'
 gen_bm_tb = GenBmTb();
 gen_bm_tb.init_bins(filename)
 print gen_bm_tb.get_all_bins()

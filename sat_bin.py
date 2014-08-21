@@ -668,7 +668,10 @@ class BinManager(object):
 
     # update sat engine's result to clauses bins
     def update_bin(self, bin_i, conflict, sat_engine):
+        global gen_debug_info
+        gen_debug_info.cnt_update += 1
         logger.info('update_bin %d' % (bin_i + 1))
+        logger.info('\tcnt_update %d' % (gen_debug_info.cnt_update))
 
         self.n_oc_bin[bin_i] = sat_engine.c_array.n_oc
         self.n_lc_bin[bin_i] = sat_engine.c_array.n_lc
@@ -680,7 +683,6 @@ class BinManager(object):
         #         v = self.vars_bins[bin_i][i]
         #         self.global_vs[v] = sat_engine.local_vars.vs[i]
 
-        global gen_debug_info
         if logger.level <= logging.INFO:
             logger.info(gen_debug_info.bin_clauses(
                 sat_engine,
@@ -744,6 +746,10 @@ class BinManager(object):
                 vs.set(0, False, 0)
                 gen_debug_info.cnt_gbkt_clear_vs += 1
 
+        # ls的回退是不需要的，但为了调试verilog，可以加上
+        # for i in xrange(bkt_lvl, len(self.lvl_state)):
+        #     self.lvl_state[i].reset()
+
     def print_bkted_lvl(self, lvl):
         ltemp = '  level '
         stemp = '  bkted '
@@ -755,12 +761,6 @@ class BinManager(object):
         logger.info(ltemp)
         logger.info(stemp)
         logger.info(btemp)
-
-        if gen_debug_info.cnt_across_bkt % CNT_ACROSS_BKT == 0:
-            logger.warning('cnt across bkt: %d' %
-                           gen_debug_info.cnt_across_bkt)
-            logger.warning('  cnt_load: %d' % gen_debug_info.cnt_load)
-            logger.warning(stemp)
 
     def compute_s_bkt(self, lvl, bin_i, next_bi):
         # the s_bkt is monotone increasing, this guarantees the solver's
@@ -819,6 +819,7 @@ class GenDebugInfo(object):
 
         self.cnt_across_bkt = 0
         self.cnt_load = 0
+        self.cnt_update = 0
 
         self.cnt_decision = 0
         self.cnt_bcp = 0
@@ -833,6 +834,7 @@ class GenDebugInfo(object):
     def __str__(self):
         str_info = "\nGenDebugInfo\n"
         str_info += "  cnt_load          : %s\n" % str(self.cnt_load)
+        str_info += "  cnt_update        : %s\n" % str(self.cnt_update)
         str_info += "  cnt_across_bkt    : %s\n" % str(self.cnt_across_bkt)
         str_info += "  cnt_gbkt_visit_vs : %s\n" % str(self.cnt_gbkt_visit_vs)
         str_info += "  cnt_gbkt_clear_vs : %s\n" % str(self.cnt_gbkt_clear_vs)
@@ -903,8 +905,8 @@ class GenDebugInfo(object):
         str1 += '\thas_bkt     %s\n' % [int(l.has_bkt) for l in ls]
         str1 += '\tctrl:\n'
         str1 += '\tcur_bin_num : %d\n' % (sat_engine.cur_bin + 1)
-        str1 += '\tload_lvl    : %d\n' % sat_engine.cur_lvl
         str1 += '\tbase_lvl    : %d\n' % sat_engine.base_lvl
+        str1 += '\tcur_lvl     : %d\n' % sat_engine.cur_lvl
         return str1
 
     def bin_clauses_sv(self, sat_engine):
@@ -952,8 +954,8 @@ class GenDebugInfo(object):
 
         str1 += '\t//ctrl\n'
         str1 += '\tint cur_bin_num = %d;\n' % (sat_engine.cur_bin + 1)
-        str1 += '\tint load_lvl = %d;\n' % sat_engine.cur_lvl
         str1 += '\tint base_lvl = %d;\n' % sat_engine.base_lvl
+        str1 += '\tint load_lvl = %d;\n' % sat_engine.cur_lvl
 
         str1 = str1.replace('= [', "= '{")
         str1 = str1.replace(']\n', '};\n')
@@ -1029,6 +1031,16 @@ def control(filename):
     logger.info('\nsatisfiable')
     print '\nsatisfiable'
 
+    logger.info('\nresult var value')
+    str_var_value = '\t'
+    for i, vs in enumerate(bin_manager.global_vs):
+        assert(vs.value == 1 or vs.value == 2)
+        var = i + 1
+        if vs.value == 1:
+            var = -var
+        str_var_value += str(var) + ' '
+    logger.info(str_var_value)
+
     # test the satisfiability
     bin_manager.test(filename)
     return 'sat'
@@ -1085,7 +1097,7 @@ def main():
     parser.add_argument('--filename',
                         type=str,
                         help='input filename',
-                        default='testdata/bram_bins_sat7.txt'
+                        default='bram.txt'
                         )
     parser.add_argument('--log2file',
                         type=int,
@@ -1106,6 +1118,7 @@ def main():
     args = parser.parse_args()
     filename = args.filename
     # filename = 'testdata/bram_bin_uf20-0232.cnf'
+    # filename = 'testdata/bram_bin_uf20-01.cnf'
     # filename = 'bram.txt'
 
     # print args.info
